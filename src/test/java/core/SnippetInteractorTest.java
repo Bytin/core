@@ -18,6 +18,7 @@ import core.usecase.snippet.CreateSnippet;
 import core.usecase.snippet.RetrievePublicSnippet;
 import core.usecase.snippet.SnippetInteractorManager;
 import core.usecase.snippet.AbstractSnippetInteractor.HiddenSnippetException;
+import core.usecase.snippet.AbstractSnippetInteractor.NoSuchSnippetException;
 import core.usecase.user.CreateUser;
 import core.usecase.user.UserInteractorManager;
 
@@ -80,6 +81,12 @@ public class SnippetInteractorTest {
                 "2020-12-05 00:00", "2020-12-05 00:00");
         var actual = snippetInteractor.retrieveSnippet(request);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void getNonExistentSnippetThrowsException(){
+        var request = new RetrievePublicSnippet.RequestModel(9);
+        assertThrows(NoSuchSnippetException.class, () -> snippetInteractor.retrieveSnippet(request));
     }
 
     @Test

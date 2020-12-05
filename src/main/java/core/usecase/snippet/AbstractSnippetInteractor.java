@@ -14,4 +14,7 @@ public abstract class AbstractSnippetInteractor {
 		private static final long serialVersionUID = 1L;
 	}
     
+	public static class NoSuchSnippetException extends IllegalStateException{
+		private static final long serialVersionUID = 1L;
+	}
 }
