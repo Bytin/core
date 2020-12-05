@@ -27,11 +27,6 @@ public class RetrievePublicSnippet extends AbstractSnippetInteractor
                 .whenLastModified("2020-12-05 00:00").build();
     }
 
-    @Override
-    public void validate(RequestModel req) throws IllegalRequestModelException {
-        // TODO test
-    }
-
     public static record RequestModel(long id) {
     }
 

@@ -27,11 +27,6 @@ public class CreateSnippet extends AbstractSnippetInteractor
         return new ResponseModel("Snippet has been successfully saved.");
     }
 
-    @Override
-    public void validate(RequestModel request) throws IllegalRequestModelException {
-        //TODO test
-    }
-
     private Snippet makeSnippetFromRequest(RequestModel req){
         User owner = userGateway.findByUserName(req.owner);
         Snippet snippet = new Snippet(req.title, req.language, req.code, req.description, owner, req.whenCreated, req.whenLastModified);

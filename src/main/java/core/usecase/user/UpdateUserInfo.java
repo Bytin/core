@@ -13,8 +13,6 @@ public class UpdateUserInfo extends AbstractUserInteractor
     }
 
 	public ResponseModel execute(RequestModel request) {
-        validate(request);
-
         User user = gateway.findByUserName(request.oldUsername);
 
         if(gateway.existsByUsername(request.username))
@@ -27,11 +25,6 @@ public class UpdateUserInfo extends AbstractUserInteractor
 
 		return new ResponseModel("User info has been updated successfully.");
 	}
-
-    @Override
-    public void validate(RequestModel req) throws IllegalRequestModelException {
-        //TODO write test for this
-    }
 
     public static record RequestModel(@NonNull String oldUsername, @NonNull String username, @NonNull String email) {
     }

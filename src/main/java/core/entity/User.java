@@ -19,6 +19,14 @@ public class User {
     @NonNull
     UserRole role;
 
+    public void validate(){
+        if(username.isBlank() || email.isBlank())
+            throw new IllegalArgumentException("Username or email can't be blank.");
+        if(password.length() < 6)
+            throw new IllegalArgumentException("Password should be at least 6 characters long.");
+        //TODO validate email and password patterns
+    }
+
     public enum UserRole {
 
         USER, ADMIN, UNACTIVATED, SUSPENDED;

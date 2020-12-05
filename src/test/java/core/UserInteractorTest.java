@@ -2,7 +2,6 @@ package core;
 
 import core.boundary.*;
 import core.mock.MockUserRepository;
-import core.usecase.Command.IllegalRequestModelException;
 import core.usecase.user.*;
 import core.usecase.user.AbstractUserInteractor.*;
 
@@ -42,11 +41,11 @@ public class UserInteractorTest {
         var nullPassword = new CreateUser.RequestModel("asdfasdf", null, "sadflkj");
         var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
 
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.createUser(blankUsernameInRequest));
-        assertThrows(IllegalRequestModelException.class, () ->  userInteractor.createUser(shortPasswordInRequest));
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.createUser(blankEmailInRequest));
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.createUser(nullPassword));
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.createUser(nullUsername));
+        assertThrows(IllegalArgumentException.class, () -> userInteractor.createUser(blankUsernameInRequest));
+        assertThrows(IllegalArgumentException.class, () ->  userInteractor.createUser(shortPasswordInRequest));
+        assertThrows(IllegalArgumentException.class, () -> userInteractor.createUser(blankEmailInRequest));
+        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullPassword));
+        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullUsername));
     }
 
     @Test
@@ -69,8 +68,8 @@ public class UserInteractorTest {
         var nullUsernameInRequest = new RetrieveProfile.RequestModel(null);
         var blankUsernameInRequest = new RetrieveProfile.RequestModel("");
 
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.retrieveUserProfile(blankUsernameInRequest));
-        assertThrows(IllegalRequestModelException.class, () -> userInteractor.retrieveUserProfile(nullUsernameInRequest));
+        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveUserProfile(blankUsernameInRequest));
+        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveUserProfile(nullUsernameInRequest));
     }
 
     @Test
