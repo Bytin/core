@@ -30,7 +30,7 @@ public class UpdateUserInfo extends AbstractUserInteractor
 
     @Override
     public void validate(RequestModel req) throws IllegalRequestModelException {
-
+        //TODO write test for this
     }
 
     public static record RequestModel(@NonNull String oldUsername, @NonNull String username, @NonNull String email) {

@@ -2,9 +2,9 @@ package core.usecase;
 
 public interface Command<Request, Response> {
 
-    void validate(Request req) throws IllegalRequestModelException;
+    void validate(Request request) throws IllegalRequestModelException;
 
-    Response execute(Request req);
+    Response execute(Request request);
 
     class IllegalRequestModelException extends IllegalArgumentException {
         private static final long serialVersionUID = 1L;
