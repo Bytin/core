@@ -48,4 +48,8 @@ public class MockSnippetRepository implements SnippetGateway {
                 return map.values().stream().filter(snip -> snip.getOwner().equals(owner)).collect(Collectors.toList());
         }
 
+        public void clearRepo(){
+                map.clear();
+        }
+
 }

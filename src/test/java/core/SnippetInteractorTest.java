@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import core.boundary.*;
@@ -22,49 +23,43 @@ public class SnippetInteractorTest {
 
         UserIOBoundary userInteractor;
         SnippetIOBoundary snippetInteractor;
-        String[] snippetOwners;
-        Map<String, SnippetDTO> ownerSnippetMap;
+        DummnyOwnedSnippets dummyOwnedSnippets;
+        Runnable repoCleaner;
 
         @BeforeAll
         public void setUp() {
                 var userDb = new MockUserRepository();
                 var snippetDb = new MockSnippetRepository();
+                repoCleaner = () -> snippetDb.clearRepo();
                 snippetInteractor = new SnippetInteractorManager(snippetDb, userDb);
                 userInteractor = new UserInteractorManager(userDb);
-                snippetOwners = new String[] {"noah", "kate", "andy", "alice", "adam"};
-                ownerSnippetMap = new HashMap<>();
+                dummyOwnedSnippets = new DummnyOwnedSnippets(snippetInteractor, "noah", "kate",
+                                "andy", "alice", "adam");
                 createUsers();
-                createSnippets();
         }
 
         void createUsers() {
-                for (String owner : snippetOwners) {
+                for (String owner : dummyOwnedSnippets.users) {
                         userInteractor.createUser(
                                         new CreateUser.RequestModel(owner, "asdlfkwe", "a@g.com"));
                 }
         }
 
-        void createSnippets() {
-                boolean[] hidden = new boolean[] {false, true, true, false, false};
-
-                for (int i = 0; i < snippetOwners.length; i++) {
-                        SnippetDTO snippetDTO = dummnySnippet(i + 1, snippetOwners[i], hidden[i]);
-                        var request = new CreateSnippet.RequestModel(snippetDTO);
+        @BeforeEach
+        void init() {
+                dummyOwnedSnippets.createSnippets(snippetDto -> {
+                        var request = new CreateSnippet.RequestModel(snippetDto);
                         var expected = new CreateSnippet.ResponseModel(
                                         "Snippet has been successfully saved.");
                         var actual = snippetInteractor.createSnippet(request);
 
                         assertEquals(expected, actual);
-                        ownerSnippetMap.put(snippetOwners[i], snippetDTO);
-                }
-
+                });
         }
 
-        SnippetDTO dummnySnippet(int id, String owner, boolean hidden) {
-                return SnippetDTO.builder().id(id).title("test").language("java").framework(null)
-                                .code("assert").description("rigor").resource(null).owner(owner)
-                                .hidden(hidden).whenCreated(LocalDateTime.of(2020, 12, 5, id, 0, 0))
-                                .whenLastModified(LocalDateTime.of(2020, 12, 5, id, 0, 0)).build();
+        @AfterEach
+        void cleanUp() {
+                repoCleaner.run();
         }
 
         @Test
@@ -113,7 +108,8 @@ public class SnippetInteractorTest {
 
                 var requestSameSnippet = new RetrievePublicSnippet.RequestModel(1);
 
-                var previous = new RetrievePublicSnippet.ResponseModel(ownerSnippetMap.get("noah"));
+                var previous = new RetrievePublicSnippet.ResponseModel(
+                                dummyOwnedSnippets.getSnippetOfUser("noah"));
 
                 var actualSnippet = snippetInteractor.retrievePublicSnippet(requestSameSnippet);
                 assertNotEquals(previous, actualSnippet);
@@ -138,8 +134,8 @@ public class SnippetInteractorTest {
         @ValueSource(longs = {1})
         void getASnippet(long id) {
                 var request = new RetrievePublicSnippet.RequestModel(id);
-                var expected = new RetrievePublicSnippet.ResponseModel(
-                                ownerSnippetMap.get(snippetOwners[(int) id - 1]));
+                var expected = new RetrievePublicSnippet.ResponseModel(dummyOwnedSnippets
+                                .getSnippetOfUser(dummyOwnedSnippets.users[(int) id - 1]));
                 var actual = snippetInteractor.retrievePublicSnippet(request);
                 assertEquals(expected, actual);
         }
@@ -161,7 +157,8 @@ public class SnippetInteractorTest {
         @Test
         void userGetsHisOwnSnippet() {
                 var request = new RetrieveSnippetOfUser.RequestModel(2l, "kate");
-                var expected = new RetrieveSnippetOfUser.ResponseModel(ownerSnippetMap.get("kate"));
+                var expected = new RetrieveSnippetOfUser.ResponseModel(
+                                dummyOwnedSnippets.getSnippetOfUser("kate"));
                 assertEquals(expected, snippetInteractor.retrieveSnippetOfUser(request));
         }
 
@@ -182,7 +179,7 @@ public class SnippetInteractorTest {
                                         snippetInteractor.RetrieveAllPublicSnippets(request);
                         assertEquals(5, response.numberOfSnippets());
                         assertIterableEquals(
-                                        ownerSnippetMap.values().stream()
+                                        dummyOwnedSnippets.ownerSnippetMap.values().stream()
                                                         .sorted((x, y) -> Long.compare(x.id(),
                                                                         y.id()))
                                                         .limit(pageSize)
@@ -205,60 +202,37 @@ public class SnippetInteractorTest {
 
                 assertEquals(3, recentSnippets.size());
                 assertIterableEquals(
-                                ownerSnippetMap.values().stream()
+                                dummyOwnedSnippets.ownerSnippetMap.values().stream()
                                                 .sorted((x, y) -> y.whenLastModified()
                                                                 .compareTo(x.whenLastModified()))
                                                 .limit(3).collect(Collectors.toList()),
                                 recentSnippets);
         }
 
-        Collection<SnippetDTO> createManyDummySnippetsOwnedBy(String owner, boolean hidden,
-                        int amount) {
-                List<SnippetDTO> list = new ArrayList<>(amount);
-                int start = snippetOwners.length;
-                for (int i = start; i < start + amount; i++) {
-                        SnippetDTO snippetDTO = dummnySnippet(i + 1, owner, hidden);
-                        list.add(snippetDTO);
-                        snippetInteractor.createSnippet(new CreateSnippet.RequestModel(snippetDTO));
-                }
-                return list;
-        }
-
-        @Test
-        public void getAllSnippetsOfUser() {
-                boolean hidden = true;
-                int pageSize = 2;
-                String owner = "karel";
-
-                userInteractor.createUser(
-                                new CreateUser.RequestModel(owner, "asdlfkwe", "a@g.com"));
-
-                Collection<SnippetDTO> expectedSnippets =
-                                createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
-
+        @ParameterizedTest
+        @CsvSource(value = {"true, 2", "false, 5"})
+        public void getAllSnippetsOfUser(boolean hidden, int pageSize) {
+                String owner = dummyOwnedSnippets.users[dummyOwnedSnippets.users.length - 1];
+                Collection<SnippetDTO> dummySnippets =
+                                dummyOwnedSnippets.createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
                 var request = new RetrieveAllSnippetsOfUser.RequestModel(owner, 1, pageSize);
+                var expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(dummySnippets.size(),
+                                dummySnippets.stream().limit(pageSize).collect(Collectors.toList()));
+                var actualResponse = snippetInteractor.retrieveSnippetsOfUser(request);
 
-                var expectedResponse =
-                                new RetrieveAllSnippetsOfUser.ResponseModel(pageSize,
-                                                expectedSnippets);
-
-                var actualResponse =
-                                snippetInteractor.retrieveSnippetsOfUser(request);
 
                 assertEquals(expectedResponse.numberOfSnippets(),
                                 actualResponse.numberOfSnippets());
-
                 assertIterableEquals(expectedResponse.snippets(), actualResponse.snippets());
 
-
                 var requestSecondPage =
-                                new RetrieveAllSnippetsOfUser.RequestModel(owner, 2, pageSize);
-                expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(pageSize, List.of());
+                                new RetrieveAllSnippetsOfUser.RequestModel(owner, 3, pageSize);
+                expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(dummySnippets.size(), List.of());
+
+
                 assertEquals(expectedResponse.numberOfSnippets(),
                                 actualResponse.numberOfSnippets());
-
-                actualResponse =
-                                snippetInteractor.retrieveSnippetsOfUser(requestSecondPage);
+                actualResponse = snippetInteractor.retrieveSnippetsOfUser(requestSecondPage);
                 assertIterableEquals(expectedResponse.snippets(), actualResponse.snippets());
 
         }
