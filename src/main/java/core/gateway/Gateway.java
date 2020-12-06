@@ -9,5 +9,7 @@ public interface Gateway<T, ID> {
 
     void save(T o);
 
+    int getSize();
+
     Collection<T> findAll();
 }

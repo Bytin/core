@@ -14,6 +14,9 @@ public interface SnippetIOBoundary extends IOBoundary{
 
 	Object retrieveSnippetOfUser(core.usecase.snippet.RetrieveSnippetOfUser.RequestModel request);
 
+  core.usecase.snippet.RetrieveAllPublicSnippets.ResponseModel RetrieveAllPublicSnippets(
+      core.usecase.snippet.RetrieveAllPublicSnippets.RequestModel request);
+
 
 
 }

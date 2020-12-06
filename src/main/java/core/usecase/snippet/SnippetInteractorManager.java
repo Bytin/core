@@ -36,4 +36,10 @@ public class SnippetInteractorManager extends AbstractSnippetInteractor implemen
         return new RetrieveSnippetOfUser(gateway).execute(request);
     }
 
+    @Override
+    public core.usecase.snippet.RetrieveAllPublicSnippets.ResponseModel RetrieveAllPublicSnippets(
+                    core.usecase.snippet.RetrieveAllPublicSnippets.RequestModel request) {
+            return new RetrieveAllPublicSnippets(gateway).execute(request);
+    }
+
 }
