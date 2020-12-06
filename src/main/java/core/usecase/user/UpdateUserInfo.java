@@ -3,6 +3,7 @@ package core.usecase.user;
 import core.entity.User;
 import core.gateway.UserGateway;
 import core.usecase.Command;
+import core.usecase.UseCaseException.*;
 import lombok.NonNull;
 
 public class UpdateUserInfo extends AbstractUserInteractor
@@ -16,7 +17,7 @@ public class UpdateUserInfo extends AbstractUserInteractor
         User user = gateway.findByUserName(request.oldUsername);
 
         if(gateway.existsByUsername(request.username))
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException(request.username);
 
         user.setUsername(request.username);
         user.setEmail(request.email);

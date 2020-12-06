@@ -2,8 +2,9 @@ package core;
 
 import core.boundary.*;
 import core.mock.MockUserRepository;
+import core.usecase.UseCaseException.NoSuchUserException;
+import core.usecase.UseCaseException.UserAlreadyExistsException;
 import core.usecase.user.*;
-import core.usecase.user.AbstractUserInteractor.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

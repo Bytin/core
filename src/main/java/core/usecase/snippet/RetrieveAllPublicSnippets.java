@@ -1,7 +1,6 @@
 package core.usecase.snippet;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import core.dto.SnippetDTO;
 import core.gateway.SnippetGateway;
@@ -28,13 +27,6 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
         public static record ResponseModel(int numberOfSnippets, Collection<SnippetDTO> snippets) {
         }
 
-        static <T> Collection<T> pageSection(Collection<T> collection, int page, int pageSize) {
-                List<T> list = List.copyOf(collection);
-                int offset = (page - 1) * pageSize;
-                int end = Math.min(list.size(), offset + pageSize);
-                if (end < offset)
-                        return List.of();
-                return list.subList(offset, end);
-        }
+
 
 }

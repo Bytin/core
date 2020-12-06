@@ -4,6 +4,7 @@ import core.entity.User;
 import core.entity.User.UserRole;
 import core.gateway.UserGateway;
 import core.usecase.Command;
+import core.usecase.UseCaseException.*;
 
 public class CreateUser extends AbstractUserInteractor
 		implements Command<CreateUser.RequestModel, CreateUser.ResponseModel> {
@@ -15,7 +16,7 @@ public class CreateUser extends AbstractUserInteractor
 	@Override
 	public ResponseModel execute(RequestModel req) {
 		if (gateway.existsByUsername(req.username))
-			throw new UserAlreadyExistsException();
+			throw new UserAlreadyExistsException(req.username);
 
 		User user = new User(req.username, req.email, req.password, UserRole.UNACTIVATED);
 		user.validate();
