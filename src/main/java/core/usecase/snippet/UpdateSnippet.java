@@ -1,12 +1,10 @@
 package core.usecase.snippet;
 
-import java.time.LocalDateTime;
-
+import core.dto.SnippetDTO;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
-import lombok.Builder;
 import lombok.NonNull;
 
 public class UpdateSnippet extends AbstractSnippetInteractor
@@ -21,25 +19,22 @@ public class UpdateSnippet extends AbstractSnippetInteractor
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Snippet snippet = gateway.findById(request.id);
-        if (!snippet.getOwner().equals(request.owner))
+        Snippet snippet = gateway.findById(request.snippet.id());
+        if (!snippet.getOwner().equals(request.snippet.owner()))
             throw new DifferentSnippetOwnerException("Requester doesn't own that snippet");
 
-        gateway.save(buildNewFromOld(request));
+        gateway.save(buildNewFromOld(request.snippet));
         return new ResponseModel("Snippet has been successfully updated.");
     }
 
-    private Snippet buildNewFromOld(RequestModel req) {
+    private Snippet buildNewFromOld(SnippetDTO req) {
         return Snippet.builder().id(req.id()).title(req.title()).language(req.language()).framework(req.framework())
                 .code(req.code()).description(req.description()).resource(req.resource()).hidden(req.hidden())
-                .owner(userGateway.findByUserName(req.owner())).whenCreated(req.whenCreated)
-                .whenLastModified(req.whenLastModified).build();
+                .owner(userGateway.findByUserName(req.owner())).whenCreated(req.whenCreated())
+                .whenLastModified(req.whenLastModified()).build();
     }
 
-    @Builder
-    public static record RequestModel(@NonNull Long id, @NonNull String title, @NonNull String language,
-            String framework, @NonNull String code, @NonNull String description, String resource, @NonNull String owner,
-            boolean hidden, @NonNull LocalDateTime whenCreated, @NonNull LocalDateTime whenLastModified) {
+    public static record RequestModel(@NonNull SnippetDTO snippet) {
     }
 
     public static record ResponseModel(@NonNull String message) {

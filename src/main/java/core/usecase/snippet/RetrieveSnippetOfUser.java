@@ -1,9 +1,9 @@
 package core.usecase.snippet;
 
+import core.dto.SnippetDTO;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
-import lombok.Builder;
 import lombok.NonNull;
 
 public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
@@ -20,22 +20,13 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
         if (!snippet.getOwner().equals(request.username))
             throw new DifferentSnippetOwnerException("Requester doesn't own that snippet");
 
-        return new ResponseModel(snippet);
+        return new ResponseModel(new SnippetDTO(snippet));
     }
 
     public static record RequestModel(@NonNull Long snippetId, @NonNull String username) {
     }
 
-    @Builder
-    public static record ResponseModel(@NonNull String title, @NonNull String language, String framework,
-            @NonNull String code, @NonNull String description, String resource, @NonNull String owner, boolean hidden,
-            @NonNull String whenCreated, @NonNull String whenLastModified) {
-
-        public ResponseModel(Snippet snip) {
-            this(snip.getTitle(), snip.getLanguage(), snip.getFramework(), snip.getCode(), snip.getDescription(),
-                    snip.getResource(), snip.getOwner(), snip.isHidden(), snip.getWhenCreated(),
-                    snip.getWhenLastModified());
-        }
+    public static record ResponseModel(@NonNull SnippetDTO snippet){
     }
 
 }

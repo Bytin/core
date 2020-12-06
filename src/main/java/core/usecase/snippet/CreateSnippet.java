@@ -1,7 +1,6 @@
 package core.usecase.snippet;
 
-import java.time.LocalDateTime;
-
+import core.dto.SnippetDTO;
 import core.entity.Snippet;
 import core.entity.User;
 import core.gateway.SnippetGateway;
@@ -22,22 +21,20 @@ public class CreateSnippet extends AbstractSnippetInteractor
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Snippet snippet = makeSnippetFromRequest(request);
+        Snippet snippet = makeSnippetFromRequest(request.snippet);
         gateway.save(snippet);
         return new ResponseModel("Snippet has been successfully saved.");
     }
 
-    private Snippet makeSnippetFromRequest(RequestModel req){
-        User owner = userGateway.findByUserName(req.owner);
-        Snippet snippet = new Snippet(req.title, req.language, req.code, req.description, owner, req.whenCreated, req.whenLastModified);
-        snippet.setHidden(req.hidden);
+    private Snippet makeSnippetFromRequest(SnippetDTO req){
+        User owner = userGateway.findByUserName(req.owner());
+        Snippet snippet = new Snippet(req.title(), req.language(), req.code(), req.description(), owner, req.whenCreated(), req.whenLastModified());
+        snippet.setHidden(req.hidden());
         return snippet;
     }
 
     @Builder
-    public static record RequestModel(@NonNull String title, @NonNull String language, String framework,
-            @NonNull String code, @NonNull String description, String resource, @NonNull String owner, boolean hidden,
-            @NonNull LocalDateTime whenCreated, @NonNull LocalDateTime whenLastModified) {
+    public static record RequestModel(@NonNull SnippetDTO snippet) {
     }
 
     public static record ResponseModel(@NonNull String message) {

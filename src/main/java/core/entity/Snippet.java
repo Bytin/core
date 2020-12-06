@@ -1,7 +1,6 @@
 package core.entity;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,14 +35,6 @@ public class Snippet {
 
     public String getOwner() {
         return owner.getUsername();
-    }
-
-    public String getWhenLastModified() {
-        return whenLastModified.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-    }
-
-    public String getWhenCreated() {
-        return whenCreated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
 }

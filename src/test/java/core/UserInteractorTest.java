@@ -24,9 +24,10 @@ public class UserInteractorTest {
     }
 
     public void createUsers() {
-        var names = new String[] { "john", "mary", "echidna", "julian" };
+        var names = new String[] {"john", "mary", "echidna", "julian"};
         for (String username : names) {
-            var request = new CreateUser.RequestModel(username, "asdf90234", username + "@gmail.com");
+            var request =
+                    new CreateUser.RequestModel(username, "asdf90234", username + "@gmail.com");
             var expected = new CreateUser.ResponseModel("User '" + username + "' created.");
             var actual = userInteractor.createUser(request);
             assertEquals(expected, actual);
@@ -41,22 +42,25 @@ public class UserInteractorTest {
         var nullPassword = new CreateUser.RequestModel("asdfasdf", null, "sadflkj");
         var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
 
-        assertThrows(IllegalArgumentException.class, () -> userInteractor.createUser(blankUsernameInRequest));
-        assertThrows(IllegalArgumentException.class, () ->  userInteractor.createUser(shortPasswordInRequest));
-        assertThrows(IllegalArgumentException.class, () -> userInteractor.createUser(blankEmailInRequest));
+        assertThrows(IllegalArgumentException.class,
+                () -> userInteractor.createUser(blankUsernameInRequest));
+        assertThrows(IllegalArgumentException.class,
+                () -> userInteractor.createUser(shortPasswordInRequest));
+        assertThrows(IllegalArgumentException.class,
+                () -> userInteractor.createUser(blankEmailInRequest));
         assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullPassword));
         assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullUsername));
     }
 
     @Test
-    public void createDuplicateUserThrowsException(){
+    public void createDuplicateUserThrowsException() {
         var request = new CreateUser.RequestModel("mary", "adsfsdf", "slkdfj");
         assertThrows(UserAlreadyExistsException.class, () -> userInteractor.createUser(request));
     }
 
     @ParameterizedTest
     @CsvSource(value = {"4, julian", "2, mary", "3, echidna"})
-    public void getProfile( long id, String username) {
+    public void getProfile(long id, String username) {
         var request = new RetrieveProfile.RequestModel(username);
         var expected = new RetrieveProfile.ResponseModel(id, username, username + "@gmail.com");
         var actual = userInteractor.retrieveUserProfile(request);
@@ -68,12 +72,14 @@ public class UserInteractorTest {
         var nullUsernameInRequest = new RetrieveProfile.RequestModel(null);
         var blankUsernameInRequest = new RetrieveProfile.RequestModel("");
 
-        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveUserProfile(blankUsernameInRequest));
-        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveUserProfile(nullUsernameInRequest));
+        assertThrows(NoSuchUserException.class,
+                () -> userInteractor.retrieveUserProfile(blankUsernameInRequest));
+        assertThrows(NoSuchUserException.class,
+                () -> userInteractor.retrieveUserProfile(nullUsernameInRequest));
     }
 
     @Test
-    public void updateUser(){
+    public void updateUser() {
         var request = new UpdateUserInfo.RequestModel("john", "josh", "@gmail.com");
         var expected = new UpdateUserInfo.ResponseModel("User info has been updated successfully.");
         var actual = userInteractor.updateUserInfo(request);
@@ -89,10 +95,10 @@ public class UserInteractorTest {
     }
 
     @Test
-    public void updateUserWithReservedNameThrowsException(){
+    public void updateUserWithReservedNameThrowsException() {
         var request = new UpdateUserInfo.RequestModel("julian", "mary", "@gmail.com");
-        assertThrows(UserAlreadyExistsException.class, () -> userInteractor.updateUserInfo(request));
+        assertThrows(UserAlreadyExistsException.class,
+                () -> userInteractor.updateUserInfo(request));
     }
-
 
 }
