@@ -19,6 +19,7 @@ import core.mock.MockSnippetRepository;
 import core.mock.MockUserRepository;
 import core.usecase.snippet.CreateSnippet;
 import core.usecase.snippet.RetrievePublicSnippet;
+import core.usecase.snippet.RetrieveSnippetOfUser;
 import core.usecase.snippet.SnippetInteractorManager;
 import core.usecase.snippet.UpdateSnippet;
 import core.usecase.snippet.AbstractSnippetInteractor.DifferentSnippetOwnerException;
@@ -110,7 +111,7 @@ public class SnippetInteractorTest {
                 .code("assert").description("rigor").resource(null).owner("noah").hidden(false)
                 .whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00").build();
 
-        var actualSnippet = snippetInteractor.retrieveSnippet(request1);
+        var actualSnippet = snippetInteractor.retrievePublicSnippet(request1);
         assertNotEquals(previous, actualSnippet);
 
         var current = RetrievePublicSnippet.ResponseModel.builder().title("test").language("js").code("expectToBe")
@@ -137,20 +138,35 @@ public class SnippetInteractorTest {
         var expected = RetrievePublicSnippet.ResponseModel.builder().title("test").language("java").framework(null)
                 .code("assert").description("rigor").resource(null).owner("noah").hidden(false)
                 .whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00").build();
-        var actual = snippetInteractor.retrieveSnippet(request);
+        var actual = snippetInteractor.retrievePublicSnippet(request);
         assertEquals(expected, actual);
     }
 
     @Test
     void getNonExistentSnippetThrowsException() {
         var request = new RetrievePublicSnippet.RequestModel(9);
-        assertThrows(NoSuchSnippetException.class, () -> snippetInteractor.retrieveSnippet(request));
+        assertThrows(NoSuchSnippetException.class, () -> snippetInteractor.retrievePublicSnippet(request));
     }
 
     @Test
-    void getSnippetButIsHiddenSoThrowException() {
+    void getHiddenSnippetOfSomeoneElseThrowException() {
         var request = new RetrievePublicSnippet.RequestModel(2);
-        assertThrows(HiddenSnippetException.class, () -> snippetInteractor.retrieveSnippet(request));
+        assertThrows(HiddenSnippetException.class, () -> snippetInteractor.retrievePublicSnippet(request));
+    }
+
+    @Test
+    void userGetsHisOwnSnippet() {
+        var request = new RetrieveSnippetOfUser.RequestModel(2l, "kate");
+        var expected = RetrieveSnippetOfUser.ResponseModel.builder().title("test").language("java").framework(null)
+                .code("assert").description("rigor").resource(null).owner("kate").hidden(true)
+                .whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00").build();
+        assertEquals(expected, snippetInteractor.retrieveSnippetOfUser(request));
+    }
+
+    @Test
+    void userGetsSnippetOfDifferentUserThrowsException() {
+        var request = new RetrieveSnippetOfUser.RequestModel(2l, "noah");
+        assertThrows(DifferentSnippetOwnerException.class, () -> snippetInteractor.retrieveSnippetOfUser(request));
     }
 
 }
