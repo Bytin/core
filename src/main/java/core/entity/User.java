@@ -29,7 +29,7 @@ public class User {
 
     public enum UserRole {
 
-        USER, ADMIN, UNACTIVATED, SUSPENDED;
+        USER, ADMIN, SUSPENDED;
 
         /**
          * @return the string representation of this {@link UserRole}, as prefixed with

@@ -18,7 +18,7 @@ public class CreateUser extends AbstractUserInteractor
 		if (gateway.existsByUsername(req.username))
 			throw new UserAlreadyExistsException(req.username);
 
-		User user = new User(req.username, req.email, req.password, UserRole.UNACTIVATED);
+		User user = new User(req.username, req.email, req.password, UserRole.USER);
 		user.validate();
 
 		gateway.save(user);
