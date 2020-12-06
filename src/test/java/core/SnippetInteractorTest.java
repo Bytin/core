@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import core.boundary.*;
 import core.dto.SnippetDTO;
 import core.mock.*;
+import core.usecase.UseCaseException.*;
 import core.usecase.snippet.*;
-import core.usecase.snippet.AbstractSnippetInteractor.*;
 import core.usecase.user.*;
 
 @TestInstance(Lifecycle.PER_CLASS)

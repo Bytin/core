@@ -24,6 +24,30 @@ public class UseCaseException extends RuntimeException {
                 }
         }
 
+        public static class HiddenSnippetException extends UseCaseException {
+                public HiddenSnippetException(String msg) {
+                        super(msg);
+                }
+
+                private static final long serialVersionUID = 1L;
+        }
+
+        public static class NoSuchSnippetException extends UseCaseException {
+                public NoSuchSnippetException(String msg) {
+                        super(msg);
+                }
+
+                private static final long serialVersionUID = 1L;
+        }
+
+        public static class DifferentSnippetOwnerException extends UseCaseException {
+                public DifferentSnippetOwnerException(String string) {
+                        super(string);
+                }
+
+                private static final long serialVersionUID = 1L;
+        }
+
 
 
 }

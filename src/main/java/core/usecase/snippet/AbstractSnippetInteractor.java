@@ -12,22 +12,7 @@ public abstract class AbstractSnippetInteractor {
                 this.gateway = gateway;
         }
 
-        // TODO should I just use Illegal state exceptions with custem messages?
-        public static class HiddenSnippetException extends IllegalStateException {
-                private static final long serialVersionUID = 1L;
-        }
 
-        public static class NoSuchSnippetException extends IllegalStateException {
-                private static final long serialVersionUID = 1L;
-        }
-
-        public static class DifferentSnippetOwnerException extends IllegalStateException {
-                public DifferentSnippetOwnerException(String string) {
-                        super(string);
-                }
-
-                private static final long serialVersionUID = 1L;
-        }
 
         static <T> Collection<T> pageSection(Collection<T> collection, int page, int pageSize) {
                 List<T> list = List.copyOf(collection);

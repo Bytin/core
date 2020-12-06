@@ -5,6 +5,7 @@ import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
+import core.usecase.UseCaseException.*;
 import lombok.NonNull;
 
 public class UpdateSnippet extends AbstractSnippetInteractor
@@ -21,7 +22,7 @@ public class UpdateSnippet extends AbstractSnippetInteractor
     public ResponseModel execute(RequestModel request) {
         Snippet snippet = gateway.findById(request.snippet.id());
         if (!snippet.getOwner().equals(request.snippet.owner()))
-            throw new DifferentSnippetOwnerException("Requester doesn't own that snippet");
+            throw new DifferentSnippetOwnerException(request.snippet.owner() + " doesn't own that snippet");
 
         gateway.save(buildNewFromOld(request.snippet));
         return new ResponseModel("Snippet has been successfully updated.");

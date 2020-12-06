@@ -4,6 +4,7 @@ import core.dto.SnippetDTO;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import core.usecase.UseCaseException.*;
 import lombok.NonNull;
 
 public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
@@ -18,7 +19,7 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
         Snippet snippet = gateway.findById(request.snippetId);
 
         if (!snippet.getOwner().equals(request.username))
-            throw new DifferentSnippetOwnerException("Requester doesn't own that snippet");
+            throw new DifferentSnippetOwnerException(snippet.getOwner() + " doesn't own that snippet");
 
         return new ResponseModel(new SnippetDTO(snippet));
     }
