@@ -9,6 +9,9 @@ public interface SnippetIOBoundary extends IOBoundary{
 
 	ResponseModel retrieveSnippet(RequestModel request);
 
+	core.usecase.snippet.UpdateSnippet.ResponseModel updateSnippet(
+			core.usecase.snippet.UpdateSnippet.RequestModel request);
+
 
 
 }
