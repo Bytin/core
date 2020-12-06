@@ -50,34 +50,47 @@ public class SnippetInteractorTest {
     }
 
     void createSnippets() {
-        // TODO use builders for more readability on the request model
-        var request = new CreateSnippet.RequestModel("test", "java", null, "assert", "rigor", null, "noah", false,
-                LocalDateTime.of(2020, 12, 5, 0, 0, 0), LocalDateTime.of(2020, 12, 5, 0, 0, 0));
+        var request = CreateSnippet.RequestModel.builder().title("test").language("java").framework(null).code("assert")
+                .description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
         var expected = new CreateSnippet.ResponseModel("Snippet has been successfully saved.");
         var actual = snippetInteractor.createSnippet(request);
+
         assertEquals(expected, actual);
 
-        var request1 = new CreateSnippet.RequestModel("test", "java", null, "assert", "rigor", null, "kate", true,
-                LocalDateTime.of(2020, 12, 5, 0, 0, 0), LocalDateTime.of(2020, 12, 5, 0, 0, 0));
+        var request1 = CreateSnippet.RequestModel.builder().title("test").language("java").framework(null)
+                .code("assert").description("rigor").resource(null).owner("kate").hidden(true)
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
         var expected1 = new CreateSnippet.ResponseModel("Snippet has been successfully saved.");
         var actual1 = snippetInteractor.createSnippet(request1);
+
         assertEquals(expected1, actual1);
 
     }
 
     @Test
     void createSnippetWithBadRequests() {
-        var request = new CreateSnippet.RequestModel(null, "java", null, "assert", "rigor", null, "noah", false,
-                LocalDateTime.of(2020, 12, 5, 0, 0, 0), LocalDateTime.of(2020, 12, 5, 0, 0, 0));
-        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(request));
+        var requestWithNullTitle = CreateSnippet.RequestModel.builder().title(null).language("java").framework(null)
+                .code("assert").description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
 
-        var request1 = new CreateSnippet.RequestModel("", "java", null, null, "rigor", null, "noah", false,
-                LocalDateTime.of(2020, 12, 5, 0, 0, 0), LocalDateTime.of(2020, 12, 5, 0, 0, 0));
-        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(request1));
+        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(requestWithNullTitle));
 
-        var request2 = new CreateSnippet.RequestModel("", "java", null, "assert", "rigor", null, "noah", true,
-                LocalDateTime.of(2020, 12, 5, 0, 0, 0), null);
-        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(request2));
+        var requestWithNullCode = CreateSnippet.RequestModel.builder().title("").language("java").framework(null)
+                .code(null).description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
+
+        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(requestWithNullCode));
+
+        var requestWithNullDateModified = CreateSnippet.RequestModel.builder().title("").language("java")
+                .framework(null).code(null).description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).whenLastModified(null).build();
+
+        assertThrows(NullPointerException.class, () -> snippetInteractor.createSnippet(requestWithNullDateModified));
     }
 
     @Test
@@ -92,30 +105,38 @@ public class SnippetInteractorTest {
         var request1 = new RetrievePublicSnippet.RequestModel(1);
         var previous = new RetrievePublicSnippet.ResponseModel("test", "java", null, "assert", "rigor", null, "noah",
                 false, "2020-12-05 00:00", "2020-12-05 00:00");
+
+        previous = RetrievePublicSnippet.ResponseModel.builder().title("test").language("java").framework(null)
+                .code("assert").description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00").build();
+
         var actualSnippet = snippetInteractor.retrieveSnippet(request1);
         assertNotEquals(previous, actualSnippet);
 
         var current = RetrievePublicSnippet.ResponseModel.builder().title("test").language("js").code("expectToBe")
-                .description("rigor").owner("noah").whenCreated("2020-12-05 00:00")
-                .whenLastModified("2020-12-05 00:00").build();
+                .description("rigor").owner("noah").whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00")
+                .build();
         assertEquals(current, actualSnippet);
     }
 
     @Test
-    void updateSnippetOfOtherUserThrowsException(){
-        var requestFromJamesNotNoah = UpdateSnippet.RequestModel.builder().id(1l).title("test").language("js").code("expectToBe")
-                .description("rigor").owner("james").whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+    void updateSnippetOfOtherUserThrowsException() {
+        var requestFromJamesNotNoah = UpdateSnippet.RequestModel.builder().id(1l).title("test").language("js")
+                .code("expectToBe").description("rigor").owner("james")
+                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                 .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
- 
-        assertThrows(DifferentSnippetOwnerException.class, () -> snippetInteractor.updateSnippet(requestFromJamesNotNoah));
+
+        assertThrows(DifferentSnippetOwnerException.class,
+                () -> snippetInteractor.updateSnippet(requestFromJamesNotNoah));
     }
 
     @ParameterizedTest
     @ValueSource(longs = { 1 })
     void getASnippet(long id) {
         var request = new RetrievePublicSnippet.RequestModel(id);
-        var expected = new RetrievePublicSnippet.ResponseModel("test", "java", null, "assert", "rigor", null, "noah",
-                false, "2020-12-05 00:00", "2020-12-05 00:00");
+        var expected = RetrievePublicSnippet.ResponseModel.builder().title("test").language("java").framework(null)
+                .code("assert").description("rigor").resource(null).owner("noah").hidden(false)
+                .whenCreated("2020-12-05 00:00").whenLastModified("2020-12-05 00:00").build();
         var actual = snippetInteractor.retrieveSnippet(request);
         assertEquals(expected, actual);
     }
