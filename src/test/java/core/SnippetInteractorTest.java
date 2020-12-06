@@ -52,8 +52,8 @@ public class SnippetInteractorTest {
                                         .language("java").framework(null).code("assert")
                                         .description("rigor").resource(null).owner(snippetOwners[i])
                                         .hidden(hidden[i])
-                                        .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
-                                        .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .whenCreated(LocalDateTime.of(2020, 12, 5, i, 0, 0))
+                                        .whenLastModified(LocalDateTime.of(2020, 12, 5, i, 0, 0))
                                         .build();
 
                         var request = new CreateSnippet.RequestModel(snippetDTO);
@@ -182,16 +182,35 @@ public class SnippetInteractorTest {
                         RetrieveAllPublicSnippets.ResponseModel response =
                                         snippetInteractor.RetrieveAllPublicSnippets(request);
                         assertEquals(5, response.numberOfSnippets());
-                        assertIterableEquals(ownerSnippetMap.values().stream()
-                                        .sorted((x, y) -> Long.compare(x.id(), y.id()))
-                                        .limit(pageSize)
-                                        .collect(Collectors.toList()), response.snippets());
+                        assertIterableEquals(
+                                        ownerSnippetMap.values().stream()
+                                                        .sorted((x, y) -> Long.compare(x.id(),
+                                                                        y.id()))
+                                                        .limit(pageSize)
+                                                        .collect(Collectors.toList()),
+                                        response.snippets());
                 }
 
                 page = 2;
                 var request = new RetrieveAllPublicSnippets.RequestModel(page, pageSize);
                 var response = snippetInteractor.RetrieveAllPublicSnippets(request);
                 assertIterableEquals(List.of(), response.snippets());
+        }
+
+        @Test
+        void getMostRecentSnippets() {
+                var request = new RetrieveRecentSnippets.RequestModel(3);
+                RetrieveRecentSnippets.ResponseModel response =
+                                snippetInteractor.RetrieveRecentSnippets(request);
+                var recentSnippets = response.snippets();
+
+                assertEquals(3, recentSnippets.size());
+                assertIterableEquals(
+                                ownerSnippetMap.values().stream()
+                                                .sorted((x, y) -> y.whenLastModified()
+                                                                .compareTo(x.whenLastModified()))
+                                                .limit(3).collect(Collectors.toList()),
+                                recentSnippets);
         }
 
 }

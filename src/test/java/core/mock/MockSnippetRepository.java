@@ -1,7 +1,7 @@
 package core.mock;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 
@@ -36,6 +36,11 @@ public class MockSnippetRepository implements SnippetGateway {
         @Override
         public Collection<Snippet> findAll() {
                 return map.values();
+        }
+
+        @Override
+        public Collection<Snippet> findMostRecent(int size) {
+                return map.values().stream().sorted((x, y) -> y.getWhenLastModified().compareTo(x.getWhenLastModified())).limit(size).collect(Collectors.toList());
         }
 
 }
