@@ -39,7 +39,6 @@ public class UserInteractorTest {
     public void createUsersThrowsException() {
         var blankUsernameInRequest = new CreateUser.RequestModel("", "asdfwetewt", "@gmail.com");
         var shortPasswordInRequest = new CreateUser.RequestModel("asdf", "asdf", "@gmail.com");
-        var blankEmailInRequest = new CreateUser.RequestModel("asdfasdf", "asdfwe3244", "");
         var nullPassword = new CreateUser.RequestModel("asdfasdf", null, "sadflkj");
         var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
 
@@ -47,8 +46,6 @@ public class UserInteractorTest {
                 () -> userInteractor.createUser(blankUsernameInRequest));
         assertThrows(IllegalArgumentException.class,
                 () -> userInteractor.createUser(shortPasswordInRequest));
-        assertThrows(IllegalArgumentException.class,
-                () -> userInteractor.createUser(blankEmailInRequest));
         assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullPassword));
         assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullUsername));
     }
