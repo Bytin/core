@@ -18,8 +18,8 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
     public ResponseModel execute(RequestModel request) {
         Snippet snippet = gateway.findById(request.snippetId);
 
-        if (!snippet.getOwner().equals(request.username))
-            throw new DifferentSnippetOwnerException(snippet.getOwner() + " doesn't own that snippet");
+        if (!snippet.getOwner().getUsername().equals(request.username))
+            throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername() + " doesn't own that snippet");
 
         return new ResponseModel(new SnippetDTO(snippet));
     }

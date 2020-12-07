@@ -1,7 +1,7 @@
 package core.entity;
 
 import java.time.LocalDateTime;
-
+import core.dto.SnippetDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +33,12 @@ public class Snippet {
 
     private boolean hidden;
 
-    public String getOwner() {
-        return owner.getUsername();
+    public User getOwner() {
+            return owner;
+    }
+
+    public SnippetDTO toSnippetDto(){
+        return null;
     }
 
 }

@@ -21,7 +21,7 @@ public class UpdateSnippet extends AbstractSnippetInteractor
     @Override
     public ResponseModel execute(RequestModel request) {
         Snippet snippet = gateway.findById(request.snippet.id());
-        if (!snippet.getOwner().equals(request.snippet.owner()))
+        if (!snippet.getOwner().getUsername().equals(request.snippet.owner().username()))
             throw new DifferentSnippetOwnerException(request.snippet.owner() + " doesn't own that snippet");
 
         gateway.save(buildNewFromOld(request.snippet));
@@ -31,7 +31,7 @@ public class UpdateSnippet extends AbstractSnippetInteractor
     private Snippet buildNewFromOld(SnippetDTO req) {
         return Snippet.builder().id(req.id()).title(req.title()).language(req.language()).framework(req.framework())
                 .code(req.code()).description(req.description()).resource(req.resource()).hidden(req.hidden())
-                .owner(userGateway.findByUserName(req.owner())).whenCreated(req.whenCreated())
+                .owner(userGateway.findByUserName(req.owner().username())).whenCreated(req.whenCreated())
                 .whenLastModified(req.whenLastModified()).build();
     }
 

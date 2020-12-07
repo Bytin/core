@@ -28,10 +28,10 @@ public class CreateSnippet extends AbstractSnippetInteractor
         }
 
         private Snippet makeSnippetFromRequest(SnippetDTO req) {
-                if (!userGateway.existsByUsername(req.owner()))
-                        throw new NoSuchUserException(req.owner());
+                if (!userGateway.existsByUsername(req.owner().username()))
+                        throw new NoSuchUserException(req.owner().username());
 
-                User owner = userGateway.findByUserName(req.owner());
+                User owner = userGateway.findByUserName(req.owner().username());
                 Snippet snippet = new Snippet(req.title(), req.language(), req.code(),
                                 req.description(), owner, req.whenCreated(),
                                 req.whenLastModified());

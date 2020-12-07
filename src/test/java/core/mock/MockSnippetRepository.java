@@ -45,7 +45,7 @@ public class MockSnippetRepository implements SnippetGateway {
 
         @Override
         public Collection<Snippet> findAllByOwnerUsername(String owner) {
-                return map.values().stream().filter(snip -> snip.getOwner().equals(owner)).collect(Collectors.toList());
+                return map.values().stream().filter(snip -> snip.getOwner().getUsername().equals(owner)).collect(Collectors.toList());
         }
 
         public void clearRepo(){

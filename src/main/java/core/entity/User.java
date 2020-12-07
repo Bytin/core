@@ -1,30 +1,34 @@
 package core.entity;
 
+import core.dto.UserDTO;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class User {
+
     long id;
+
     @NonNull
-    String username;
-    @NonNull
+    String username, password;
+
     String email;
-    @NonNull
-    String password;
+
     @NonNull
     UserRole role;
 
     public void validate(){
-        if(username.isBlank() || email.isBlank())
-            throw new IllegalArgumentException("Username or email can't be blank.");
+        if(username.isBlank())
+            throw new IllegalArgumentException("Username can't be blank.");
         if(password.length() < 6)
             throw new IllegalArgumentException("Password should be at least 6 characters long.");
         //TODO validate email and password patterns
+    }
+
+    public UserDTO toUserDto(){
+            return new UserDTO(id, username, email);
     }
 
     public enum UserRole {

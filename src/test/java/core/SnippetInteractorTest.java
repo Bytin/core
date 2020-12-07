@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import core.boundary.*;
 import core.dto.SnippetDTO;
+import core.dto.UserDTO;
 import core.mock.*;
 import core.usecase.UseCaseException.*;
 import core.usecase.snippet.*;
@@ -39,9 +40,9 @@ public class SnippetInteractorTest {
         }
 
         void createUsers() {
-                for (String owner : dummyOwnedSnippets.users) {
+                for (UserDTO owner : dummyOwnedSnippets.getUsers()) {
                         userInteractor.createUser(
-                                        new CreateUser.RequestModel(owner, "asdlfkwe", "a@g.com"));
+                                        new CreateUser.RequestModel(owner.username(), "asdfwe", owner.email()));
                 }
         }
 
@@ -64,9 +65,10 @@ public class SnippetInteractorTest {
 
         @Test
         void createSnippetWithBadRequests() {
+                UserDTO noah = dummyOwnedSnippets.getUserDTO("noah");
                 var requestWithNullTitle = new CreateSnippet.RequestModel(SnippetDTO.builder()
                                 .title(null).language("java").framework(null).code("assert")
-                                .description("rigor").resource(null).owner("noah").hidden(false)
+                                .description("rigor").resource(null).owner(noah).hidden(false)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                                 .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build());
 
@@ -75,7 +77,7 @@ public class SnippetInteractorTest {
 
                 var requestWithNullCode = new CreateSnippet.RequestModel(SnippetDTO.builder()
                                 .title("").language("java").framework(null).code(null)
-                                .description("rigor").resource(null).owner("noah").hidden(false)
+                                .description("rigor").resource(null).owner(noah).hidden(false)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                                 .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build());
 
@@ -84,7 +86,7 @@ public class SnippetInteractorTest {
 
                 var requestWithNullDateModified = new CreateSnippet.RequestModel(SnippetDTO
                                 .builder().title("").language("java").framework(null).code(null)
-                                .description("rigor").resource(null).owner("noah").hidden(false)
+                                .description("rigor").resource(null).owner(noah).hidden(false)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                                 .whenLastModified(null).build());
 
@@ -94,8 +96,9 @@ public class SnippetInteractorTest {
 
         @Test
         void updateSnippet() {
+                UserDTO noah = dummyOwnedSnippets.getUserDTO("noah");
                 SnippetDTO moddedSnippet = SnippetDTO.builder().id(1l).title("test").language("js")
-                                .code("expectToBe").description("rigor").owner("noah")
+                                .code("expectToBe").description("rigor").owner(noah)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                                 .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build();
 
@@ -120,9 +123,10 @@ public class SnippetInteractorTest {
 
         @Test
         void updateSnippetOfOtherUserThrowsException() {
+                UserDTO james = dummyOwnedSnippets.getUserDTO("james");
                 var requestFromJamesNotNoah = new UpdateSnippet.RequestModel(SnippetDTO.builder()
                                 .id(1l).title("test").language("js").code("expectToBe")
-                                .description("rigor").owner("james")
+                                .description("rigor").owner(james)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
                                 .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build());
 
@@ -133,9 +137,10 @@ public class SnippetInteractorTest {
         @ParameterizedTest
         @ValueSource(longs = {1})
         void getASnippet(long id) {
+                String username = dummyOwnedSnippets.getUserDTO(id).username();
                 var request = new RetrievePublicSnippet.RequestModel(id);
                 var expected = new RetrievePublicSnippet.ResponseModel(dummyOwnedSnippets
-                                .getSnippetOfUser(dummyOwnedSnippets.users[(int) id - 1]));
+                                .getSnippetOfUser(username));
                 var actual = snippetInteractor.retrievePublicSnippet(request);
                 assertEquals(expected, actual);
         }
@@ -179,7 +184,7 @@ public class SnippetInteractorTest {
                                         snippetInteractor.RetrieveAllPublicSnippets(request);
                         assertEquals(5, response.numberOfSnippets());
                         assertIterableEquals(
-                                        dummyOwnedSnippets.ownerSnippetMap.values().stream()
+                                        dummyOwnedSnippets.getMap().values().stream()
                                                         .sorted((x, y) -> Long.compare(x.id(),
                                                                         y.id()))
                                                         .limit(pageSize)
@@ -202,7 +207,7 @@ public class SnippetInteractorTest {
 
                 assertEquals(3, recentSnippets.size());
                 assertIterableEquals(
-                                dummyOwnedSnippets.ownerSnippetMap.values().stream()
+                                dummyOwnedSnippets.getMap().values().stream()
                                                 .sorted((x, y) -> y.whenLastModified()
                                                                 .compareTo(x.whenLastModified()))
                                                 .limit(3).collect(Collectors.toList()),
@@ -212,12 +217,13 @@ public class SnippetInteractorTest {
         @ParameterizedTest
         @CsvSource(value = {"true, 2", "false, 5"})
         public void getAllSnippetsOfUser(boolean hidden, int pageSize) {
-                String owner = dummyOwnedSnippets.users[dummyOwnedSnippets.users.length - 1];
-                Collection<SnippetDTO> dummySnippets =
-                                dummyOwnedSnippets.createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
+                UserDTO owner = dummyOwnedSnippets.getLastUser();
+                Collection<SnippetDTO> dummySnippets = dummyOwnedSnippets
+                                .createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
                 var request = new RetrieveAllSnippetsOfUser.RequestModel(owner, 1, pageSize);
-                var expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(dummySnippets.size(),
-                                dummySnippets.stream().limit(pageSize).collect(Collectors.toList()));
+                var expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(
+                                dummySnippets.size(), dummySnippets.stream().limit(pageSize)
+                                                .collect(Collectors.toList()));
                 var actualResponse = snippetInteractor.retrieveSnippetsOfUser(request);
 
 
@@ -227,7 +233,8 @@ public class SnippetInteractorTest {
 
                 var requestSecondPage =
                                 new RetrieveAllSnippetsOfUser.RequestModel(owner, 3, pageSize);
-                expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(dummySnippets.size(), List.of());
+                expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(dummySnippets.size(),
+                                List.of());
 
 
                 assertEquals(expectedResponse.numberOfSnippets(),
