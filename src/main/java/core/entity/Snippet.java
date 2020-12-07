@@ -16,29 +16,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Builder
 public class Snippet {
-    private long id;
+        private long id;
 
-    @NonNull
-    private String title, language, code, description;
+        @NonNull
+        private String title, language, code, description;
 
-    private String framework, resource;
+        private String framework, resource;
 
-    @NonNull
-    @EqualsAndHashCode.Exclude
-    private User owner;
+        @NonNull
+        @EqualsAndHashCode.Exclude
+        private User owner;
 
-    @NonNull
-    @EqualsAndHashCode.Exclude
-    private LocalDateTime whenCreated, whenLastModified;
+        @NonNull
+        @EqualsAndHashCode.Exclude
+        private LocalDateTime whenCreated, whenLastModified;
 
-    private boolean hidden;
+        private boolean hidden;
 
-    public User getOwner() {
-            return owner;
-    }
+        public User getOwner() {
+                return owner;
+        }
 
-    public SnippetDTO toSnippetDto(){
-        return null;
-    }
+        public SnippetDTO toSnippetDto() {
+                return new SnippetDTO(id, title, language, framework, code, description, resource,
+                                owner.toUserDto(), hidden, whenCreated, whenLastModified);
+        }
 
 }

@@ -19,7 +19,7 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
                 var pageOfSnippets = pageSection(snippets, request.page, request.pageSize);
 
                 return new ResponseModel(gateway.getSize(), pageOfSnippets.stream()
-                                .map(snip -> new SnippetDTO(snip)).collect(Collectors.toList()));
+                                .map(snip -> snip.toSnippetDto()).collect(Collectors.toList()));
         }
 
         public static record RequestModel(int page, int pageSize) {

@@ -20,7 +20,7 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
         public ResponseModel execute(RequestModel request) {
                 Collection<Snippet> snippets = gateway.findAllByOwnerUsername(request.owner.username());
                 var snippetDtos = pageSection(snippets, request.page, request.pageSize).stream()
-                                .map(snip -> new SnippetDTO(snip)).collect(Collectors.toList());
+                                .map(snip -> snip.toSnippetDto()).collect(Collectors.toList());
                 return new ResponseModel(snippets.size(), snippetDtos);
         }
 

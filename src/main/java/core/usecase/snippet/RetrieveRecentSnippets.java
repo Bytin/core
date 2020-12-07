@@ -15,7 +15,7 @@ public class RetrieveRecentSnippets extends AbstractSnippetInteractor implements
         @Override
         public ResponseModel execute(RequestModel request) {
                 var snippets = gateway.findMostRecent(request.size);
-                return new ResponseModel(snippets.stream().map(snip -> new SnippetDTO(snip)).collect(Collectors.toList()));
+                return new ResponseModel(snippets.stream().map(snip -> snip.toSnippetDto()).collect(Collectors.toList()));
         }
 
         public static record RequestModel(int size) {

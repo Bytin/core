@@ -24,7 +24,7 @@ public class RetrievePublicSnippet extends AbstractSnippetInteractor
         if(snippet.isHidden())
             throw new HiddenSnippetException(snippet.getId());
 
-        return new ResponseModel(new SnippetDTO(snippet));
+        return new ResponseModel(snippet.toSnippetDto());
     }
 
     public static record RequestModel(long id) {

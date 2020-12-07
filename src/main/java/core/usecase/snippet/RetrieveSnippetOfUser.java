@@ -21,7 +21,7 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
         if (!snippet.getOwner().getUsername().equals(request.username))
             throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername());
 
-        return new ResponseModel(new SnippetDTO(snippet));
+        return new ResponseModel(snippet.toSnippetDto());
     }
 
     public static record RequestModel(@NonNull Long snippetId, @NonNull String username) {
