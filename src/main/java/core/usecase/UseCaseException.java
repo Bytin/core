@@ -11,38 +11,38 @@ public class UseCaseException extends RuntimeException {
         public static class UserAlreadyExistsException extends UseCaseException {
                 private static final long serialVersionUID = 1L;
 
-                public UserAlreadyExistsException(String msg) {
-                        super(msg);
+                public UserAlreadyExistsException(String username) {
+                        super(username + " already exists.");
                 }
         }
 
         public static class NoSuchUserException extends UseCaseException {
                 private static final long serialVersionUID = 1L;
 
-                public NoSuchUserException(String msg) {
-                        super(msg);
+                public NoSuchUserException(String username) {
+                        super(username + " already exits.");
                 }
         }
 
         public static class HiddenSnippetException extends UseCaseException {
-                public HiddenSnippetException(String msg) {
-                        super(msg);
+                public HiddenSnippetException(long id) {
+                        super("Snippet #" + id + " is a private snippet.");
                 }
 
                 private static final long serialVersionUID = 1L;
         }
 
         public static class NoSuchSnippetException extends UseCaseException {
-                public NoSuchSnippetException(String msg) {
-                        super(msg);
+                public NoSuchSnippetException(long id) {
+                        super("No snippet exists by id #" + id);
                 }
 
                 private static final long serialVersionUID = 1L;
         }
 
         public static class DifferentSnippetOwnerException extends UseCaseException {
-                public DifferentSnippetOwnerException(String string) {
-                        super(string);
+                public DifferentSnippetOwnerException(String username) {
+                        super(username + " doesn't own that snippet.");
                 }
 
                 private static final long serialVersionUID = 1L;

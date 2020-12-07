@@ -17,12 +17,12 @@ public class RetrievePublicSnippet extends AbstractSnippetInteractor
     @Override
     public ResponseModel execute(RequestModel req) {
         if(!gateway.existsById(req.id))
-            throw new NoSuchSnippetException("id: " + req.id);
+            throw new NoSuchSnippetException(req.id);
 
         Snippet snippet = gateway.findById(req.id);
 
         if(snippet.isHidden())
-            throw new HiddenSnippetException("id: " + snippet.getId());
+            throw new HiddenSnippetException(snippet.getId());
 
         return new ResponseModel(new SnippetDTO(snippet));
     }

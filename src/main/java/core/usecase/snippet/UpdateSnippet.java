@@ -22,7 +22,7 @@ public class UpdateSnippet extends AbstractSnippetInteractor
     public ResponseModel execute(RequestModel request) {
         Snippet snippet = gateway.findById(request.snippet.id());
         if (!snippet.getOwner().getUsername().equals(request.snippet.owner().username()))
-            throw new DifferentSnippetOwnerException(request.snippet.owner() + " doesn't own that snippet");
+            throw new DifferentSnippetOwnerException(request.snippet.owner().username());
 
         gateway.save(buildNewFromOld(request.snippet));
         return new ResponseModel("Snippet has been successfully updated.");
