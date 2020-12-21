@@ -10,8 +10,8 @@ public class MockSnippetRepository implements SnippetGateway {
         Map<Long, Snippet> map = new HashMap<>();
 
         @Override
-        public Snippet findById(Long id) {
-                return map.get(id);
+        public Optional<Snippet> findById(Long id) {
+                return Optional.ofNullable(map.get(id));
         }
 
         @Override

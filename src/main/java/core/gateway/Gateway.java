@@ -1,9 +1,9 @@
 package core.gateway;
 
-import java.util.Collection;
+import java.util.*;
 
 public interface Gateway<T, ID> {
-    T findById(ID id);
+    Optional<T> findById(ID id);
 
     boolean existsById(ID id);
 

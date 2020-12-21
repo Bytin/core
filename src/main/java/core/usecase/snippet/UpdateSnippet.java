@@ -20,7 +20,7 @@ public class UpdateSnippet extends AbstractSnippetInteractor
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Snippet snippet = gateway.findById(request.snippet.id());
+        Snippet snippet = gateway.findById(request.snippet.id()).orElseThrow(() -> new NoSuchSnippetException(request.snippet.id()));
         if (!snippet.getOwner().getUsername().equals(request.snippet.owner().username()))
             throw new DifferentSnippetOwnerException(request.snippet.owner().username());
 

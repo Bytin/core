@@ -16,7 +16,7 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Snippet snippet = gateway.findById(request.snippetId);
+        Snippet snippet = gateway.findById(request.snippetId).orElseThrow(() -> new NoSuchSnippetException(request.snippetId));
 
         if (!snippet.getOwner().getUsername().equals(request.username))
             throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername());

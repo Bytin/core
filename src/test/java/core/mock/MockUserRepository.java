@@ -10,8 +10,8 @@ public class MockUserRepository implements UserGateway {
         private Map<Long, User> map = new HashMap<>();
 
         @Override
-        public User findById(Long id) {
-                return map.get(id);
+        public Optional<User> findById(Long id) {
+                return Optional.ofNullable(map.get(id));
         }
 
         @Override
