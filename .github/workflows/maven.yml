@@ -32,4 +32,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: run tests
-        run: mvn -B clean test --file pom.xml
+        run: mvn -B clean test
