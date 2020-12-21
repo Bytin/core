@@ -28,3 +28,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run tests
         run: mvn clean test
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
