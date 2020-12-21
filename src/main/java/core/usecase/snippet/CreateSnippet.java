@@ -7,7 +7,6 @@ import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
-import lombok.Builder;
 import lombok.NonNull;
 
 public class CreateSnippet extends AbstractSnippetInteractor
@@ -39,7 +38,6 @@ public class CreateSnippet extends AbstractSnippetInteractor
                 return snippet;
         }
 
-        @Builder
         public static record RequestModel(@NonNull SnippetDTO snippet) {
         }
 

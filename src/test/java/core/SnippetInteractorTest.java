@@ -41,8 +41,8 @@ public class SnippetInteractorTest {
 
         void createUsers() {
                 for (UserDTO owner : dummyOwnedSnippets.getUsers()) {
-                        userInteractor.createUser(
-                                        new CreateUser.RequestModel(owner.username(), "asdfwe", owner.email()));
+                        userInteractor.createUser(new CreateUser.RequestModel(owner.username(),
+                                        "asdfwe", owner.email()));
                 }
         }
 
@@ -66,32 +66,38 @@ public class SnippetInteractorTest {
         @Test
         void createSnippetWithBadRequests() {
                 UserDTO noah = dummyOwnedSnippets.getUserDTO("noah");
-                var requestWithNullTitle = new CreateSnippet.RequestModel(SnippetDTO.builder()
-                                .title(null).language("java").framework(null).code("assert")
-                                .description("rigor").resource(null).owner(noah).hidden(false)
-                                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
-                                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build());
 
-                assertThrows(NullPointerException.class,
-                                () -> snippetInteractor.createSnippet(requestWithNullTitle));
+                assertThrows(NullPointerException.class, () -> {
+                        var requestWithNullTitle = new CreateSnippet.RequestModel(SnippetDTO
+                                        .builder().title(null).language("java").framework(null)
+                                        .code("assert").description("rigor").resource(null)
+                                        .owner(noah).hidden(false)
+                                        .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .build());
+                        snippetInteractor.createSnippet(requestWithNullTitle);
+                });
 
-                var requestWithNullCode = new CreateSnippet.RequestModel(SnippetDTO.builder()
-                                .title("").language("java").framework(null).code(null)
-                                .description("rigor").resource(null).owner(noah).hidden(false)
-                                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
-                                .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0)).build());
+                assertThrows(NullPointerException.class, () -> {
+                        var requestWithNullCode = new CreateSnippet.RequestModel(SnippetDTO
+                                        .builder().title("").language("java").framework(null)
+                                        .code(null).description("rigor").resource(null).owner(noah)
+                                        .hidden(false)
+                                        .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .whenLastModified(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .build());
+                        snippetInteractor.createSnippet(requestWithNullCode);
+                });
 
-                assertThrows(NullPointerException.class,
-                                () -> snippetInteractor.createSnippet(requestWithNullCode));
-
-                var requestWithNullDateModified = new CreateSnippet.RequestModel(SnippetDTO
-                                .builder().title("").language("java").framework(null).code(null)
-                                .description("rigor").resource(null).owner(noah).hidden(false)
-                                .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
-                                .whenLastModified(null).build());
-
-                assertThrows(NullPointerException.class,
-                                () -> snippetInteractor.createSnippet(requestWithNullDateModified));
+                assertThrows(NullPointerException.class, () -> {
+                        var requestWithNullDateModified = new CreateSnippet.RequestModel(SnippetDTO
+                                        .builder().title("").language("java").framework(null)
+                                        .code(null).description("rigor").resource(null).owner(noah)
+                                        .hidden(false)
+                                        .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
+                                        .whenLastModified(null).build());
+                        snippetInteractor.createSnippet(requestWithNullDateModified);
+                });
         }
 
         @Test
@@ -139,8 +145,8 @@ public class SnippetInteractorTest {
         void getASnippet(long id) {
                 String username = dummyOwnedSnippets.getUserDTO(id).username();
                 var request = new RetrievePublicSnippet.RequestModel(id);
-                var expected = new RetrievePublicSnippet.ResponseModel(dummyOwnedSnippets
-                                .getSnippetOfUser(username));
+                var expected = new RetrievePublicSnippet.ResponseModel(
+                                dummyOwnedSnippets.getSnippetOfUser(username));
                 var actual = snippetInteractor.retrievePublicSnippet(request);
                 assertEquals(expected, actual);
         }
