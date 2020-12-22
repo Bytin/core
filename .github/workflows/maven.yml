@@ -30,7 +30,8 @@ jobs:
         with:
           # A list of files, directories, and wildcard patterns to cache and restore
           path: target
-          
+          key: ${{ runner.os }}-core-target
+
       - name: setup jdk
         uses: actions/setup-java@v1
         with:
