@@ -41,6 +41,7 @@ public class UserInteractorTest {
         var shortPasswordInRequest = new CreateUser.RequestModel("asdf", "asdf", "@gmail.com");
         var nullPassword = new CreateUser.RequestModel("asdfasdf", null, "sadflkj");
         var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
+        fail();
 
         assertThrows(IllegalArgumentException.class,
                 () -> userInteractor.createUser(blankUsernameInRequest));
