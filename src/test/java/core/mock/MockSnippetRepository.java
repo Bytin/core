@@ -40,16 +40,26 @@ public class MockSnippetRepository implements SnippetGateway {
 
         @Override
         public Collection<Snippet> findMostRecent(int size) {
-                return map.values().stream().sorted((x, y) -> y.getWhenLastModified().compareTo(x.getWhenLastModified())).limit(size).collect(Collectors.toList());
+                return map.values().stream()
+                                .sorted((x, y) -> y.getWhenLastModified()
+                                                .compareTo(x.getWhenLastModified()))
+                                .limit(size).collect(Collectors.toList());
         }
 
         @Override
         public Collection<Snippet> findAllByOwnerUsername(String owner) {
-                return map.values().stream().filter(snip -> snip.getOwner().getUsername().equals(owner)).collect(Collectors.toList());
+                return map.values().stream()
+                                .filter(snip -> snip.getOwner().getUsername().equals(owner))
+                                .collect(Collectors.toList());
         }
 
-        public void clearRepo(){
+        public void clearRepo() {
                 map.clear();
+        }
+
+        @Override
+        public void deleteById(long id) {
+                map.remove(id);
         }
 
 }

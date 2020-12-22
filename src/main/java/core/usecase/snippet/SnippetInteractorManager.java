@@ -54,4 +54,10 @@ public class SnippetInteractorManager extends AbstractSnippetInteractor implemen
             return new RetrieveAllSnippetsOfUser(gateway).execute(request);
     }
 
+    @Override
+    public core.usecase.snippet.DeleteSnippetOfUser.ResponseModel deleteOne(
+      core.usecase.snippet.DeleteSnippetOfUser.RequestModel request) {
+        return new DeleteSnippetOfUser(gateway).execute(request);
+    }
+
 }

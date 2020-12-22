@@ -250,4 +250,15 @@ public class SnippetInteractorTest {
 
         }
 
+        @Test
+        public void deleteSnippetOfUserTest(){
+                long snippetId = 5;
+                var response = snippetInteractor.deleteOne( new DeleteSnippetOfUser.RequestModel(snippetId));
+
+                assertEquals("Snippet was deleted successfully.", response.message());
+
+                var request = new RetrievePublicSnippet.RequestModel(snippetId);
+                assertThrows(NoSuchSnippetException.class, () -> snippetInteractor.retrievePublicSnippet(request));
+        }
+
 }

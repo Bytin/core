@@ -12,4 +12,6 @@ public interface Gateway<T, ID> {
     int getSize();
 
     Collection<T> findAll();
+
+    void deleteById(long id);
 }

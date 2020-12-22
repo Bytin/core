@@ -49,4 +49,9 @@ public class MockUserRepository implements UserGateway {
                 return findByUserName(username) != null;
         }
 
+        @Override
+        public void deleteById(long id) {
+                map.remove(id);
+        }
+
 }
