@@ -1,3 +1,4 @@
+# ![CI](https://github.com/Bytin/core/workflows/CI/badge.svg)
 # Core of [bytin.tech](https://bytin.tech)
 The goal here is the flesh out the core use cases of the bytin' app, and later repackage the backend with spring and deploy.
 
