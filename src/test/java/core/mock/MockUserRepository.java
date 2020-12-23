@@ -50,7 +50,7 @@ public class MockUserRepository implements UserGateway {
         }
 
         @Override
-        public void deleteById(long id) {
+        public void deleteById(Long id) {
                 map.remove(id);
         }
 
