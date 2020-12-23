@@ -1,6 +1,7 @@
 package core;
 
 import core.boundary.*;
+import core.dto.UserDTO;
 import core.mock.MockUserRepository;
 import core.usecase.UseCaseException.NoSuchUserException;
 import core.usecase.UseCaseException.UserAlreadyExistsException;
@@ -9,22 +10,20 @@ import core.usecase.user.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@TestInstance(Lifecycle.PER_CLASS)
 public class UserInteractorTest {
 
-    UserIOBoundary userInteractor;
+    static UserIOBoundary userInteractor;
 
     @BeforeAll
-    public void setUp() {
+    public static void setUp() {
         userInteractor = new UserInteractorManager(new MockUserRepository());
         createUsers();
     }
 
-    public void createUsers() {
+    public static void createUsers() {
         var names = new String[] {"john", "mary", "echidna", "julian"};
         for (String username : names) {
             var request =
@@ -57,12 +56,12 @@ public class UserInteractorTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"4, julian", "2, mary", "3, echidna"})
-    public void getProfile(long id, String username) {
+    @ValueSource(strings = {"julian", "mary", "echidna"})
+    public void getProfile(String username) {
         var request = new RetrieveProfile.RequestModel(username);
-        var expected = new RetrieveProfile.ResponseModel(id, username, username + "@gmail.com");
+        var expected = new RetrieveProfile.ResponseModel(new UserDTO(0, username, username + "@gmail.com"));
         var actual = userInteractor.retrieveUserProfile(request);
-        assertEquals(expected, actual);
+        assertEquals(expected.user(), actual.user());
     }
 
     @Test
@@ -84,7 +83,7 @@ public class UserInteractorTest {
         assertEquals(expected, actual);
 
         var request1 = new RetrieveProfile.RequestModel("josh");
-        var expected1 = new RetrieveProfile.ResponseModel(1, "josh", "@gmail.com");
+        var expected1 = new RetrieveProfile.ResponseModel(new UserDTO(1, "josh", "@gmail.com"));
         var actual1 = userInteractor.retrieveUserProfile(request1);
         assertEquals(expected1, actual1);
 

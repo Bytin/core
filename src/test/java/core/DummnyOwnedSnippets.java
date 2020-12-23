@@ -2,22 +2,24 @@ package core;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import core.boundary.SnippetIOBoundary;
 import core.dto.SnippetDTO;
 import core.dto.UserDTO;
+import core.entity.User;
 import core.usecase.snippet.CreateSnippet;
+import lombok.Getter;
 
 public class DummnyOwnedSnippets {
 
-        private final Map<String, SnippetDTO> ownerSnippetMap;
-        private UserDTO[] users;
+        private @Getter final Map<String, SnippetDTO> ownerSnippetMap;
+        private @Getter List<User> users;
 
         private SnippetIOBoundary snippetInteractor;
 
-        DummnyOwnedSnippets(SnippetIOBoundary snippetInteractor, String... users) {
+        DummnyOwnedSnippets(SnippetIOBoundary snippetInteractor, Collection<User> users) {
                 ownerSnippetMap = new HashMap<>();
-                this.users = userDtosFromUsernames(users);
+                this.users = users.stream().collect(Collectors.toList());
                 this.snippetInteractor = snippetInteractor;
         }
 
@@ -31,10 +33,10 @@ public class DummnyOwnedSnippets {
         void createSnippets(TestCallback<SnippetDTO> testCallback) {
                 boolean[] hidden = new boolean[] {false, true, true, false, false};
 
-                for (int i = 0; i < users.length; i++) {
-                        SnippetDTO snippetDTO = dummnySnippet(i + 1, users[i], hidden[i]);
+                for (int i = 0; i < users.size(); i++) {
+                        SnippetDTO snippetDTO = dummnySnippet(i + 1, users.get(i).toUserDto(), hidden[i]);
                         testCallback.runTest(snippetDTO);
-                        ownerSnippetMap.put(users[i].username(), snippetDTO);
+                        ownerSnippetMap.put(users.get(i).getUsername(), snippetDTO);
                 }
 
         }
@@ -43,47 +45,18 @@ public class DummnyOwnedSnippets {
                 return ownerSnippetMap.get(user);
         }
 
-        Map<String, SnippetDTO> getMap() {
-                return ownerSnippetMap;
-        }
-
-        UserDTO getLastUser() {
-                return users[users.length - 1];
-        }
-
-        UserDTO getUserDTO(long id) {
-                return users[(int) id - 1];
-        }
-
-        UserDTO getUserDTO(String user) {
-                return Stream.of(users).filter(usr -> usr.username().equals(user)).findFirst()
-                                .orElse(new UserDTO(0, "user", "a@g.com"));
-        }
-
         List<SnippetDTO> createManyDummySnippetsOwnedBy(UserDTO owner, boolean hidden, int amount) {
                 List<SnippetDTO> list = new ArrayList<>(amount);
 
                 list.add(ownerSnippetMap.get(owner.username()));
 
-                int start = users.length;
+                int start = users.size();
                 for (int i = start; i < start + amount; i++) {
                         SnippetDTO snippetDTO = dummnySnippet(i + 1, owner, hidden);
                         list.add(snippetDTO);
                         snippetInteractor.createSnippet(new CreateSnippet.RequestModel(snippetDTO));
                 }
                 return list;
-        }
-
-        UserDTO[] userDtosFromUsernames(String[] users) {
-                var dtos = new UserDTO[users.length];
-                for (int i = 0; i < users.length; i++) {
-                        dtos[i] = new UserDTO(i + 1, users[i], "we@g.com");
-                }
-                return dtos;
-        }
-
-        UserDTO[] getUsers() {
-                return users;
         }
 
         @FunctionalInterface

@@ -3,11 +3,23 @@ package core.mock;
 import java.util.*;
 
 import core.entity.User;
+import core.entity.User.UserRole;
 import core.gateway.UserGateway;
 
 public class MockUserRepository implements UserGateway {
 
-        private Map<Long, User> map = new HashMap<>();
+        private Map<Long, User> map = new HashMap<>() {
+                private static final long serialVersionUID = 1L;
+
+                {
+                        put(1l, new User("noah", "sdlkfj", UserRole.USER));
+                        put(2l, new User("kate", "sdlkfj", UserRole.USER));
+                        put(3l, new User("andy", "sdlkfj", UserRole.USER));
+                        put(4l, new User("alice", "sdlkfj", UserRole.USER));
+                        put(5l, new User("adam", "sdlkfj", UserRole.USER));
+                        put(5l, new User("james", "sdlkfj", UserRole.USER));
+                }
+        };
 
         @Override
         public Optional<User> findById(Long id) {
@@ -46,7 +58,7 @@ public class MockUserRepository implements UserGateway {
 
         @Override
         public boolean existsByUsername(String username) {
-                return findByUserName(username) != null;
+                return findByUserName(username).isPresent();
         }
 
         @Override

@@ -1,5 +1,6 @@
 package core.usecase.user;
 
+import core.dto.UserDTO;
 import core.entity.User;
 import core.gateway.UserGateway;
 import core.usecase.UseCaseException.*;
@@ -16,13 +17,13 @@ public class RetrieveProfile extends AbstractUserInteractor implements Command<R
 
         User user = gateway.findByUserName(req.username).orElseThrow(() -> new NoSuchUserException(req.username));
 
-        return new ResponseModel(user.getId(), user.getUsername(), user.getEmail());
+        return new ResponseModel(user.toUserDto());
     }
 
     public static record RequestModel(String username) {
     }
 
-    public static record ResponseModel(long id, String username, String email) {
+    public static record ResponseModel(UserDTO user) {
     }
 
 }

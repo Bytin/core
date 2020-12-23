@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,37 +13,30 @@ import org.junit.jupiter.params.provider.ValueSource;
 import core.boundary.*;
 import core.dto.SnippetDTO;
 import core.dto.UserDTO;
+import core.gateway.UserGateway;
 import core.mock.*;
 import core.usecase.UseCaseException.*;
 import core.usecase.snippet.*;
 import core.usecase.user.*;
 
-@TestInstance(Lifecycle.PER_CLASS)
 public class SnippetInteractorTest {
 
-        UserIOBoundary userInteractor;
-        SnippetIOBoundary snippetInteractor;
-        DummnyOwnedSnippets dummyOwnedSnippets;
-        Runnable repoCleaner;
+        static UserIOBoundary userInteractor;
+        static SnippetIOBoundary snippetInteractor;
+        static DummnyOwnedSnippets dummyOwnedSnippets;
+        static UserGateway userDb;
+        static Runnable repoCleaner;
 
         @BeforeAll
-        public void setUp() {
-                var userDb = new MockUserRepository();
+        public static void setUp() {
+                userDb = new MockUserRepository();
                 var snippetDb = new MockSnippetRepository();
                 repoCleaner = () -> snippetDb.clearRepo();
                 snippetInteractor = new SnippetInteractorManager(snippetDb, userDb);
                 userInteractor = new UserInteractorManager(userDb);
-                dummyOwnedSnippets = new DummnyOwnedSnippets(snippetInteractor, "noah", "kate",
-                                "andy", "alice", "adam");
-                createUsers();
+                dummyOwnedSnippets = new DummnyOwnedSnippets(snippetInteractor, userDb.findAll());
         }
 
-        void createUsers() {
-                for (UserDTO owner : dummyOwnedSnippets.getUsers()) {
-                        userInteractor.createUser(new CreateUser.RequestModel(owner.username(),
-                                        "asdfwe", owner.email()));
-                }
-        }
 
         @BeforeEach
         void init() {
@@ -65,7 +57,7 @@ public class SnippetInteractorTest {
 
         @Test
         void createSnippetWithBadRequests() {
-                UserDTO noah = dummyOwnedSnippets.getUserDTO("noah");
+                UserDTO noah = userDb.findByUserName("noah").get().toUserDto();
 
                 assertThrows(NullPointerException.class, () -> {
                         var requestWithNullTitle = new CreateSnippet.RequestModel(SnippetDTO
@@ -102,7 +94,7 @@ public class SnippetInteractorTest {
 
         @Test
         void updateSnippet() {
-                UserDTO noah = dummyOwnedSnippets.getUserDTO("noah");
+                UserDTO noah = userDb.findByUserName("noah").get().toUserDto();
                 SnippetDTO moddedSnippet = SnippetDTO.builder().id(1l).title("test").language("js")
                                 .code("expectToBe").description("rigor").owner(noah)
                                 .whenCreated(LocalDateTime.of(2020, 12, 5, 0, 0, 0))
@@ -129,7 +121,7 @@ public class SnippetInteractorTest {
 
         @Test
         void updateSnippetOfOtherUserThrowsException() {
-                UserDTO james = dummyOwnedSnippets.getUserDTO("james");
+                UserDTO james = userDb.findByUserName("james").get().toUserDto();
                 var requestFromJamesNotNoah = new UpdateSnippet.RequestModel(SnippetDTO.builder()
                                 .id(1l).title("test").language("js").code("expectToBe")
                                 .description("rigor").owner(james)
@@ -143,7 +135,7 @@ public class SnippetInteractorTest {
         @ParameterizedTest
         @ValueSource(longs = {1})
         void getASnippet(long id) {
-                String username = dummyOwnedSnippets.getUserDTO(id).username();
+                String username = userDb.findById(id).get().getUsername();
                 var request = new RetrievePublicSnippet.RequestModel(id);
                 var expected = new RetrievePublicSnippet.ResponseModel(
                                 dummyOwnedSnippets.getSnippetOfUser(username));
@@ -190,7 +182,7 @@ public class SnippetInteractorTest {
                                         snippetInteractor.RetrieveAllPublicSnippets(request);
                         assertEquals(5, response.numberOfSnippets());
                         assertIterableEquals(
-                                        dummyOwnedSnippets.getMap().values().stream()
+                                        dummyOwnedSnippets.getOwnerSnippetMap().values().stream()
                                                         .sorted((x, y) -> Long.compare(x.id(),
                                                                         y.id()))
                                                         .limit(pageSize)
@@ -213,7 +205,7 @@ public class SnippetInteractorTest {
 
                 assertEquals(3, recentSnippets.size());
                 assertIterableEquals(
-                                dummyOwnedSnippets.getMap().values().stream()
+                                dummyOwnedSnippets.getOwnerSnippetMap().values().stream()
                                                 .sorted((x, y) -> y.whenLastModified()
                                                                 .compareTo(x.whenLastModified()))
                                                 .limit(3).collect(Collectors.toList()),
@@ -223,7 +215,7 @@ public class SnippetInteractorTest {
         @ParameterizedTest
         @CsvSource(value = {"true, 2", "false, 5"})
         public void getAllSnippetsOfUser(boolean hidden, int pageSize) {
-                UserDTO owner = dummyOwnedSnippets.getLastUser();
+                UserDTO owner = userDb.findAll().stream().findAny().get().toUserDto();
                 Collection<SnippetDTO> dummySnippets = dummyOwnedSnippets
                                 .createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
                 var request = new RetrieveAllSnippetsOfUser.RequestModel(owner, 1, pageSize);

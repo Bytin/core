@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Builder
 public class Snippet {
+        @EqualsAndHashCode.Exclude
         private long id;
 
         @NonNull
@@ -31,6 +32,7 @@ public class Snippet {
         @EqualsAndHashCode.Exclude
         private LocalDateTime whenCreated, whenLastModified;
 
+        @EqualsAndHashCode.Exclude
         private boolean hidden;
 
         public User getOwner() {

@@ -20,7 +20,7 @@ public class UseCaseException extends RuntimeException {
                 private static final long serialVersionUID = 1L;
 
                 public NoSuchUserException(String username) {
-                        super(username + " already exits.");
+                        super(username + " doesn't exists.");
                 }
         }
 
