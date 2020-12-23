@@ -13,10 +13,8 @@ public class RetrieveProfile extends AbstractUserInteractor implements Command<R
 
     @Override
     public ResponseModel execute(RequestModel req) {
-        if(!gateway.existsByUsername(req.username))
-            throw new NoSuchUserException(req.username);
 
-        User user = gateway.findByUserName(req.username);
+        User user = gateway.findByUserName(req.username).orElseThrow(() -> new NoSuchUserException(req.username));
 
         return new ResponseModel(user.getId(), user.getUsername(), user.getEmail());
     }

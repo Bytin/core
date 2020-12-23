@@ -29,9 +29,9 @@ public class MockUserRepository implements UserGateway {
         }
 
         @Override
-        public User findByUserName(String username) {
+        public Optional<User> findByUserName(String username) {
                 return map.values().stream().filter(user -> user.getUsername().equals(username))
-                                .findFirst().orElse(null);
+                                .findFirst();
         }
 
         @Override

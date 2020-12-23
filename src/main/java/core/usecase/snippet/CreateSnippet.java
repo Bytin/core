@@ -30,7 +30,7 @@ public class CreateSnippet extends AbstractSnippetInteractor
                 if (!userGateway.existsByUsername(req.owner().username()))
                         throw new NoSuchUserException(req.owner().username());
 
-                User owner = userGateway.findByUserName(req.owner().username());
+                User owner = userGateway.findByUserName(req.owner().username()).orElseThrow(() -> new NoSuchUserException(req.owner().username()));
                 Snippet snippet = new Snippet(req.title(), req.language(), req.code(),
                                 req.description(), owner, req.whenCreated(),
                                 req.whenLastModified());

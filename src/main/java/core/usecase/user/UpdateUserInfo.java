@@ -7,30 +7,32 @@ import core.usecase.UseCaseException.*;
 import lombok.NonNull;
 
 public class UpdateUserInfo extends AbstractUserInteractor
-        implements Command<UpdateUserInfo.RequestModel, UpdateUserInfo.ResponseModel> {
+                implements Command<UpdateUserInfo.RequestModel, UpdateUserInfo.ResponseModel> {
 
-    UpdateUserInfo(UserGateway gateway) {
-        super(gateway);
-    }
+        UpdateUserInfo(UserGateway gateway) {
+                super(gateway);
+        }
 
-	public ResponseModel execute(RequestModel request) {
-        User user = gateway.findByUserName(request.oldUsername);
+        public ResponseModel execute(RequestModel request) {
+                if (gateway.existsByUsername(request.username))
+                        throw new UserAlreadyExistsException(request.username);
 
-        if(gateway.existsByUsername(request.username))
-            throw new UserAlreadyExistsException(request.username);
+                User user = gateway.findByUserName(request.oldUsername)
+                                .orElseThrow(() -> new NoSuchUserException(request.oldUsername));
 
-        user.setUsername(request.username);
-        user.setEmail(request.email);
+                user.setUsername(request.username);
+                user.setEmail(request.email);
 
-        gateway.save(user);
+                gateway.save(user);
 
-		return new ResponseModel("User info has been updated successfully.");
-	}
+                return new ResponseModel("User info has been updated successfully.");
+        }
 
-    public static record RequestModel(@NonNull String oldUsername, @NonNull String username, @NonNull String email) {
-    }
+        public static record RequestModel(@NonNull String oldUsername, @NonNull String username,
+                        @NonNull String email) {
+        }
 
-	public static record ResponseModel(@NonNull String message) {
-	}
+        public static record ResponseModel(@NonNull String message) {
+        }
 
 }
