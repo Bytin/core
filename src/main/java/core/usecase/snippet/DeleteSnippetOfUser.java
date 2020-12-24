@@ -2,6 +2,9 @@ package core.usecase.snippet;
 
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 public class DeleteSnippetOfUser extends AbstractSnippetInteractor implements
@@ -11,7 +14,9 @@ public class DeleteSnippetOfUser extends AbstractSnippetInteractor implements
                 super(gateway);
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 private long snippetId;
         }

@@ -7,6 +7,9 @@ import core.dto.UserDTO;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -26,7 +29,9 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
                 return new ResponseModel(snippets.size(), snippetDtos);
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 @NonNull
                 UserDTO owner;

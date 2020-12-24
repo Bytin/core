@@ -7,6 +7,9 @@ import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -31,8 +34,8 @@ public class CreateSnippet extends AbstractSnippetInteractor
                 if (!userGateway.existsByUsername(req.getOwner().getUsername()))
                         throw new NoSuchUserException(req.getOwner().getUsername());
 
-                User owner = userGateway.findByUserName(req.getOwner().getUsername())
-                                .orElseThrow(() -> new NoSuchUserException(req.getOwner().getUsername()));
+                User owner = userGateway.findByUserName(req.getOwner().getUsername()).orElseThrow(
+                                () -> new NoSuchUserException(req.getOwner().getUsername()));
                 Snippet snippet = new Snippet(req.getTitle(), req.getLanguage(), req.getCode(),
                                 req.getDescription(), owner, req.getWhenCreated(),
                                 req.getWhenLastModified());
@@ -40,7 +43,9 @@ public class CreateSnippet extends AbstractSnippetInteractor
                 return snippet;
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 private SnippetDTO snippet;
         }

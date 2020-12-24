@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import core.dto.SnippetDTO;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor implements
@@ -23,7 +26,9 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
                                 .map(snip -> snip.toSnippetDto()).collect(Collectors.toList()));
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 int page, pageSize;
         }

@@ -5,6 +5,11 @@ import core.entity.User.UserRole;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.Value;
 
 public class CreateUser extends AbstractUserInteractor
@@ -27,7 +32,9 @@ public class CreateUser extends AbstractUserInteractor
                 return new ResponseModel(String.format("User '%s' created.", req.username));
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 String username, password, email;
         }

@@ -5,6 +5,9 @@ import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -26,7 +29,9 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor implements
                 return new ResponseModel(snippet.toSnippetDto());
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 @NonNull
                 Long snippetId;

@@ -7,6 +7,9 @@ import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -42,7 +45,9 @@ public class UpdateSnippet extends AbstractSnippetInteractor
                                 .whenLastModified(req.getWhenLastModified()).build();
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 @NonNull
                 SnippetDTO snippet;

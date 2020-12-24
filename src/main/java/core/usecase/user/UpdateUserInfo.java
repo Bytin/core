@@ -4,6 +4,9 @@ import core.entity.User;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -29,7 +32,9 @@ public class UpdateUserInfo extends AbstractUserInteractor
                 return new ResponseModel("User info has been updated successfully.");
         }
 
-        @Value
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class RequestModel {
                 @NonNull
                 String oldUsername, username, email;
