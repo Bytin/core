@@ -6,28 +6,38 @@ import core.gateway.SnippetGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
 import lombok.NonNull;
+import lombok.Value;
 
-public class RetrieveSnippetOfUser extends AbstractSnippetInteractor
-        implements Command<RetrieveSnippetOfUser.RequestModel, RetrieveSnippetOfUser.ResponseModel> {
+public class RetrieveSnippetOfUser extends AbstractSnippetInteractor implements
+                Command<RetrieveSnippetOfUser.RequestModel, RetrieveSnippetOfUser.ResponseModel> {
 
-    RetrieveSnippetOfUser(SnippetGateway gateway) {
-        super(gateway);
-    }
+        RetrieveSnippetOfUser(SnippetGateway gateway) {
+                super(gateway);
+        }
 
-    @Override
-    public ResponseModel execute(RequestModel request) {
-        Snippet snippet = gateway.findById(request.snippetId).orElseThrow(() -> new NoSuchSnippetException(request.snippetId));
+        @Override
+        public ResponseModel execute(RequestModel request) {
+                Snippet snippet = gateway.findById(request.snippetId)
+                                .orElseThrow(() -> new NoSuchSnippetException(request.snippetId));
 
-        if (!snippet.getOwner().getUsername().equals(request.username))
-            throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername());
+                if (!snippet.getOwner().getUsername().equals(request.username))
+                        throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername());
 
-        return new ResponseModel(snippet.toSnippetDto());
-    }
+                return new ResponseModel(snippet.toSnippetDto());
+        }
 
-    public static record RequestModel(@NonNull Long snippetId, @NonNull String username) {
-    }
+        @Value
+        public static class RequestModel {
+                @NonNull
+                Long snippetId;
+                @NonNull
+                String username;
+        }
 
-    public static record ResponseModel(@NonNull SnippetDTO snippet){
-    }
+        @Value
+        public static class ResponseModel {
+                @NonNull
+                SnippetDTO snippet;
+        }
 
 }

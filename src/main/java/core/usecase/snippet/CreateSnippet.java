@@ -8,6 +8,7 @@ import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
 import lombok.NonNull;
+import lombok.Value;
 
 public class CreateSnippet extends AbstractSnippetInteractor
                 implements Command<CreateSnippet.RequestModel, CreateSnippet.ResponseModel> {
@@ -27,20 +28,25 @@ public class CreateSnippet extends AbstractSnippetInteractor
         }
 
         private Snippet makeSnippetFromRequest(SnippetDTO req) {
-                if (!userGateway.existsByUsername(req.owner().username()))
-                        throw new NoSuchUserException(req.owner().username());
+                if (!userGateway.existsByUsername(req.getOwner().getUsername()))
+                        throw new NoSuchUserException(req.getOwner().getUsername());
 
-                User owner = userGateway.findByUserName(req.owner().username()).orElseThrow(() -> new NoSuchUserException(req.owner().username()));
-                Snippet snippet = new Snippet(req.title(), req.language(), req.code(),
-                                req.description(), owner, req.whenCreated(),
-                                req.whenLastModified());
-                snippet.setHidden(req.hidden());
+                User owner = userGateway.findByUserName(req.getOwner().getUsername())
+                                .orElseThrow(() -> new NoSuchUserException(req.getOwner().getUsername()));
+                Snippet snippet = new Snippet(req.getTitle(), req.getLanguage(), req.getCode(),
+                                req.getDescription(), owner, req.getWhenCreated(),
+                                req.getWhenLastModified());
+                snippet.setHidden(req.isHidden());
                 return snippet;
         }
 
-        public static record RequestModel(@NonNull SnippetDTO snippet) {
+        @Value
+        public static class RequestModel {
+                private SnippetDTO snippet;
         }
 
-        public static record ResponseModel(@NonNull String message) {
+        @Value
+        public static class ResponseModel {
+                private @NonNull String message;
         }
 }

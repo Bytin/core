@@ -40,8 +40,11 @@ public class Snippet {
         }
 
         public SnippetDTO toSnippetDto() {
-                return new SnippetDTO(id, title, language, framework, code, description, resource,
-                                owner.toUserDto(), hidden, whenCreated, whenLastModified);
+                return SnippetDTO.builder().id(id).title(title).language(language)
+                                .framework(framework).code(code).description(description)
+                                .resource(resource).owner(owner.toUserDto()).hidden(hidden)
+                                .whenCreated(whenCreated).whenLastModified(whenLastModified)
+                                .build();
         }
 
 }

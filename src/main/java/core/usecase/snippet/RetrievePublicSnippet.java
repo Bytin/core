@@ -6,28 +6,35 @@ import core.gateway.SnippetGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
 import lombok.NonNull;
+import lombok.Value;
 
-public class RetrievePublicSnippet extends AbstractSnippetInteractor
-        implements Command<RetrievePublicSnippet.RequestModel, RetrievePublicSnippet.ResponseModel> {
+public class RetrievePublicSnippet extends AbstractSnippetInteractor implements
+                Command<RetrievePublicSnippet.RequestModel, RetrievePublicSnippet.ResponseModel> {
 
-    RetrievePublicSnippet(SnippetGateway gateway) {
-        super(gateway);
-    }
+        RetrievePublicSnippet(SnippetGateway gateway) {
+                super(gateway);
+        }
 
-    @Override
-    public ResponseModel execute(RequestModel req) {
-        Snippet snippet = gateway.findById(req.id).orElseThrow(() -> new NoSuchSnippetException(req.id));
+        @Override
+        public ResponseModel execute(RequestModel req) {
+                Snippet snippet = gateway.findById(req.id)
+                                .orElseThrow(() -> new NoSuchSnippetException(req.id));
 
-        if(snippet.isHidden())
-            throw new HiddenSnippetException(snippet.getId());
+                if (snippet.isHidden())
+                        throw new HiddenSnippetException(snippet.getId());
 
-        return new ResponseModel(snippet.toSnippetDto());
-    }
+                return new ResponseModel(snippet.toSnippetDto());
+        }
 
-    public static record RequestModel(long id) {
-    }
+        @Value
+        public static class RequestModel {
+                long id;
+        }
 
-    public static record ResponseModel(@NonNull SnippetDTO snippet) {
-    }
+        @Value
+        public static class ResponseModel {
+                @NonNull
+                SnippetDTO snippet;
+        }
 
 }

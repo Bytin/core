@@ -2,6 +2,7 @@ package core.usecase.snippet;
 
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import lombok.Value;
 
 public class DeleteSnippetOfUser extends AbstractSnippetInteractor implements
                 Command<DeleteSnippetOfUser.RequestModel, DeleteSnippetOfUser.ResponseModel> {
@@ -10,10 +11,14 @@ public class DeleteSnippetOfUser extends AbstractSnippetInteractor implements
                 super(gateway);
         }
 
-        public static record RequestModel(long snippetId) {
+        @Value
+        public static class RequestModel {
+                private long snippetId;
         }
 
-        public static record ResponseModel(String message) {
+        @Value
+        public static class ResponseModel {
+                String message;
         }
 
         @Override

@@ -61,7 +61,7 @@ public class UserInteractorTest {
         var request = new RetrieveProfile.RequestModel(username);
         var expected = new RetrieveProfile.ResponseModel(new UserDTO(0, username, username + "@gmail.com"));
         var actual = userInteractor.retrieveUserProfile(request);
-        assertEquals(expected.user(), actual.user());
+        assertEquals(expected.getUser(), actual.getUser());
     }
 
     @Test

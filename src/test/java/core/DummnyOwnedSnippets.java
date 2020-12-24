@@ -48,7 +48,7 @@ public class DummnyOwnedSnippets {
         List<SnippetDTO> createManyDummySnippetsOwnedBy(UserDTO owner, boolean hidden, int amount) {
                 List<SnippetDTO> list = new ArrayList<>(amount);
 
-                list.add(ownerSnippetMap.get(owner.username()));
+                list.add(ownerSnippetMap.get(owner.getUsername()));
 
                 int start = users.size();
                 for (int i = start; i < start + amount; i++) {

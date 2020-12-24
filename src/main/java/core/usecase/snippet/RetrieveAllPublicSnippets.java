@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import core.dto.SnippetDTO;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
+import lombok.Value;
 
 public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor implements
                 Command<RetrieveAllPublicSnippets.RequestModel, RetrieveAllPublicSnippets.ResponseModel> {
@@ -22,9 +23,14 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
                                 .map(snip -> snip.toSnippetDto()).collect(Collectors.toList()));
         }
 
-        public static record RequestModel(int page, int pageSize) {
+        @Value
+        public static class RequestModel {
+                int page, pageSize;
         }
-        public static record ResponseModel(int numberOfSnippets, Collection<SnippetDTO> snippets) {
+        @Value
+        public static class ResponseModel {
+                int numberOfSnippets;
+                Collection<SnippetDTO> snippets;
         }
 
 

@@ -5,31 +5,36 @@ import core.entity.User.UserRole;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
+import lombok.Value;
 
 public class CreateUser extends AbstractUserInteractor
-		implements Command<CreateUser.RequestModel, CreateUser.ResponseModel> {
+                implements Command<CreateUser.RequestModel, CreateUser.ResponseModel> {
 
-	CreateUser(UserGateway gateway) {
-		super(gateway);
-	}
+        CreateUser(UserGateway gateway) {
+                super(gateway);
+        }
 
-	@Override
-	public ResponseModel execute(RequestModel req) {
-		if (gateway.existsByUsername(req.username))
-			throw new UserAlreadyExistsException(req.username);
+        @Override
+        public ResponseModel execute(RequestModel req) {
+                if (gateway.existsByUsername(req.username))
+                        throw new UserAlreadyExistsException(req.username);
 
                 User user = new User(req.username, req.password, UserRole.USER);
                 user.validate();
                 user.setEmail(req.email);
-		gateway.save(user);
+                gateway.save(user);
 
-		return new ResponseModel(String.format("User '%s' created.", req.username));
-	}
+                return new ResponseModel(String.format("User '%s' created.", req.username));
+        }
 
-	public static record RequestModel(String username, String password, String email) {
-	}
+        @Value
+        public static class RequestModel {
+                String username, password, email;
+        }
 
-	public static record ResponseModel(String message) {
-	}
+        @Value
+        public static class ResponseModel {
+                String message;
+        }
 
 }

@@ -5,6 +5,7 @@ import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
 import lombok.NonNull;
+import lombok.Value;
 
 public class UpdateUserInfo extends AbstractUserInteractor
                 implements Command<UpdateUserInfo.RequestModel, UpdateUserInfo.ResponseModel> {
@@ -28,11 +29,16 @@ public class UpdateUserInfo extends AbstractUserInteractor
                 return new ResponseModel("User info has been updated successfully.");
         }
 
-        public static record RequestModel(@NonNull String oldUsername, @NonNull String username,
-                        @NonNull String email) {
+        @Value
+        public static class RequestModel {
+                @NonNull
+                String oldUsername, username, email;
         }
 
-        public static record ResponseModel(@NonNull String message) {
+        @Value
+        public static class ResponseModel {
+                @NonNull
+                String message;
         }
 
 }

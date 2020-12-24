@@ -8,6 +8,7 @@ import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
 import lombok.NonNull;
+import lombok.Value;
 
 public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor implements
                 Command<RetrieveAllSnippetsOfUser.RequestModel, RetrieveAllSnippetsOfUser.ResponseModel> {
@@ -18,16 +19,24 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
 
         @Override
         public ResponseModel execute(RequestModel request) {
-                Collection<Snippet> snippets = gateway.findAllByOwnerUsername(request.owner.username());
+                Collection<Snippet> snippets =
+                                gateway.findAllByOwnerUsername(request.owner.getUsername());
                 var snippetDtos = pageSection(snippets, request.page, request.pageSize).stream()
                                 .map(snip -> snip.toSnippetDto()).collect(Collectors.toList());
                 return new ResponseModel(snippets.size(), snippetDtos);
         }
 
-        public static record RequestModel(@NonNull UserDTO owner, int page, int pageSize) {
+        @Value
+        public static class RequestModel {
+                @NonNull
+                UserDTO owner;
+                int page, pageSize;
         }
 
-        public static record ResponseModel(int numberOfSnippets, Collection<SnippetDTO> snippets) {
+        @Value
+        public static class ResponseModel {
+                int numberOfSnippets;
+                Collection<SnippetDTO> snippets;
         }
 
 }
