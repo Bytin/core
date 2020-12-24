@@ -12,8 +12,10 @@ public class UserInteractorManager extends AbstractUserInteractor implements Use
 	}
 
 	@Override
-	public ResponseModel createUser(core.usecase.user.CreateUser.RequestModel requestModel) {
-		return new CreateUser(gateway).execute(requestModel);
+	public ResponseModel createUser(core.usecase.user.CreateUser.RequestModel requestModel, CreateUser.Encoder encoder) {
+                var command = new CreateUser(gateway);
+                command.encoder = encoder;
+                return command.execute(requestModel);
 	}
 
 	@Override

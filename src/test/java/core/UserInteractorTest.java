@@ -29,7 +29,7 @@ public class UserInteractorTest {
             var request =
                     new CreateUser.RequestModel(username, "asdf90234", username + "@gmail.com");
             var expected = new CreateUser.ResponseModel("User '" + username + "' created.");
-            var actual = userInteractor.createUser(request);
+            var actual = userInteractor.createUser(request, chars -> chars.toString());
             assertEquals(expected, actual);
         }
     }
@@ -42,17 +42,17 @@ public class UserInteractorTest {
         var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
 
         assertThrows(IllegalArgumentException.class,
-                () -> userInteractor.createUser(blankUsernameInRequest));
+                () -> userInteractor.createUser(blankUsernameInRequest, chars -> chars.toString()));
         assertThrows(IllegalArgumentException.class,
-                () -> userInteractor.createUser(shortPasswordInRequest));
-        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullPassword));
-        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullUsername));
+                () -> userInteractor.createUser(shortPasswordInRequest, chars -> chars.toString()));
+        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullPassword, chars -> chars.toString()));
+        assertThrows(NullPointerException.class, () -> userInteractor.createUser(nullUsername, chars -> chars.toString()));
     }
 
     @Test
     public void createDuplicateUserThrowsException() {
         var request = new CreateUser.RequestModel("mary", "adsfsdf", "slkdfj");
-        assertThrows(UserAlreadyExistsException.class, () -> userInteractor.createUser(request));
+        assertThrows(UserAlreadyExistsException.class, () -> userInteractor.createUser(request, chars -> chars.toString()));
     }
 
     @ParameterizedTest

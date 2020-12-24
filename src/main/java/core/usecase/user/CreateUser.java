@@ -7,9 +7,7 @@ import core.usecase.Command;
 import core.usecase.UseCaseException.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.Value;
 
 public class CreateUser extends AbstractUserInteractor
@@ -19,17 +17,26 @@ public class CreateUser extends AbstractUserInteractor
                 super(gateway);
         }
 
+        Encoder encoder;
+
         @Override
         public ResponseModel execute(RequestModel req) {
+                if (encoder == null)
+                        throw new NoEncoderRegisteredException();
                 if (gateway.existsByUsername(req.username))
                         throw new UserAlreadyExistsException(req.username);
 
-                User user = new User(req.username, req.password, UserRole.USER);
+                User user = new User(req.username, encoder.encode(req.password), UserRole.USER);
                 user.validate();
                 user.setEmail(req.email);
                 gateway.save(user);
 
                 return new ResponseModel(String.format("User '%s' created.", req.username));
+        }
+
+        @FunctionalInterface
+        public interface Encoder {
+                String encode(CharSequence chars);
         }
 
         @Data

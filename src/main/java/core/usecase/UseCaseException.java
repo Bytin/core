@@ -48,6 +48,16 @@ public class UseCaseException extends RuntimeException {
                 private static final long serialVersionUID = 1L;
         }
 
+        public static class NoEncoderRegisteredException extends UseCaseException {
+
+                private static final long serialVersionUID = -4629926885821339494L;
+
+                public NoEncoderRegisteredException() {
+                        super("Need a password encoder for this operation.");
+                }
+                
+        }
+
 
 
 }
