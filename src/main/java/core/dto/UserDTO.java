@@ -2,11 +2,9 @@ package core.dto;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value
-@RequiredArgsConstructor
 public class UserDTO {
 
         @EqualsAndHashCode.Exclude
