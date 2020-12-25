@@ -11,6 +11,5 @@ public class UserDTO {
         private long id;
         @NonNull
         private String username;
-        private String email;
 
 }

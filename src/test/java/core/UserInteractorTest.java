@@ -26,8 +26,7 @@ public class UserInteractorTest {
         public static void createUsers() {
                 var names = new String[] {"john", "mary", "echidna", "julian"};
                 for (String username : names) {
-                        var request = new CreateUser.RequestModel(username, "asdf90234",
-                                        username + "@gmail.com");
+                        var request = new CreateUser.RequestModel(username, "asdf90234");
                         var expected = new CreateUser.ResponseModel(
                                         "User '" + username + "' created.");
                         var actual = userInteractor.createUser(request, chars -> chars.toString());
@@ -38,28 +37,28 @@ public class UserInteractorTest {
         @Test
         public void createUsersThrowsException() {
                 var blankUsernameInRequest =
-                                new CreateUser.RequestModel("", "asdfwetewt", "@gmail.com");
+                                new CreateUser.RequestModel("", "asdfwetewt");
                 var shortPasswordInRequest =
-                                new CreateUser.RequestModel("asdf", "asdf", "@gmail.com");
+                                new CreateUser.RequestModel("asdf", "asdf");
 
                 assertThrows(IllegalArgumentException.class, () -> userInteractor
                                 .createUser(blankUsernameInRequest, chars -> chars.toString()));
                 assertThrows(IllegalArgumentException.class, () -> userInteractor
                                 .createUser(shortPasswordInRequest, chars -> chars.toString()));
-                                
+
                 assertThrows(NullPointerException.class, () -> {
-                        var nullPassword = new CreateUser.RequestModel("asdfasdf", null, "sadflkj");
+                        var nullPassword = new CreateUser.RequestModel("asdfasdf", null);
                         userInteractor.createUser(nullPassword, chars -> chars.toString());
                 });
                 assertThrows(NullPointerException.class, () -> {
-                        var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244", "asdfl");
+                        var nullUsername = new CreateUser.RequestModel(null, "asdfwe3244");
                         userInteractor.createUser(nullUsername, chars -> chars.toString());
                 });
         }
 
         @Test
         public void createDuplicateUserThrowsException() {
-                var request = new CreateUser.RequestModel("mary", "adsfsdf", "slkdfj");
+                var request = new CreateUser.RequestModel("mary", "adsfsdf");
                 assertThrows(UserAlreadyExistsException.class, () -> userInteractor
                                 .createUser(request, chars -> chars.toString()));
         }
@@ -69,7 +68,7 @@ public class UserInteractorTest {
         public void getProfile(String username) {
                 var request = new RetrieveProfile.RequestModel(username);
                 var expected = new RetrieveProfile.ResponseModel(
-                                new UserDTO(0, username, username + "@gmail.com"));
+                                new UserDTO(0, username));
                 var actual = userInteractor.retrieveUserProfile(request);
                 assertEquals(expected.getUser(), actual.getUser());
         }
@@ -95,7 +94,7 @@ public class UserInteractorTest {
 
                 var request1 = new RetrieveProfile.RequestModel("josh");
                 var expected1 = new RetrieveProfile.ResponseModel(
-                                new UserDTO(1, "josh", "@gmail.com"));
+                                new UserDTO(0, "josh"));
                 var actual1 = userInteractor.retrieveUserProfile(request1);
                 assertEquals(expected1, actual1);
 

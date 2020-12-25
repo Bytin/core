@@ -25,7 +25,6 @@ public class UpdateUserInfo extends AbstractUserInteractor
                                 .orElseThrow(() -> new NoSuchUserException(request.oldUsername));
 
                 user.setUsername(request.username);
-                user.setEmail(request.email);
 
                 gateway.save(user);
 

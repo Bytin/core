@@ -12,12 +12,12 @@ public class MockUserRepository implements UserGateway {
                 private static final long serialVersionUID = 1L;
 
                 {
-                        put(1l, new User(1, "noah", "sdlkfj", "", UserRole.USER));
-                        put(2l, new User(2, "kate", "sdlkfj", "", UserRole.USER));
-                        put(3l, new User(3, "andy", "sdlkfj", "", UserRole.USER));
-                        put(4l, new User(4, "alice", "sdlkfj", "", UserRole.USER));
-                        put(5l, new User(5, "adam", "sdlkfj", "", UserRole.USER));
-                        put(5l, new User(6, "james", "sdlkfj", "", UserRole.USER));
+                        put(1l, new User(1, "noah", "sdlkfj", UserRole.USER));
+                        put(2l, new User(2, "kate", "sdlkfj", UserRole.USER));
+                        put(3l, new User(3, "andy", "sdlkfj", UserRole.USER));
+                        put(4l, new User(4, "alice", "sdlkfj", UserRole.USER));
+                        put(5l, new User(5, "adam", "sdlkfj", UserRole.USER));
+                        put(5l, new User(6, "james", "sdlkfj", UserRole.USER));
                 }
         };
 
@@ -31,8 +31,7 @@ public class MockUserRepository implements UserGateway {
                 long id = user.getId();
                 if (id == 0)
                         id = Math.max(1, map.size() + 1);
-                map.put(id, new User(id, user.getUsername(), user.getPassword(), user.getEmail(),
-                                user.getRole()));
+                map.put(id, new User(id, user.getUsername(), user.getPassword(), user.getRole()));
         }
 
         @Override

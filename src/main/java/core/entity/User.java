@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
-@AllArgsConstructor
 @Data
 public class User {
 
@@ -13,8 +12,6 @@ public class User {
 
     @NonNull
     String username, password;
-
-    String email;
 
     @NonNull
     UserRole role;
@@ -28,7 +25,7 @@ public class User {
     }
 
     public UserDTO toUserDto(){
-            return new UserDTO(id, username, email);
+            return new UserDTO(id, username);
     }
 
     public enum UserRole {

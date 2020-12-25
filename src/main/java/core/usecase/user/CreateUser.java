@@ -27,7 +27,7 @@ public class CreateUser extends AbstractUserInteractor
                 if (gateway.existsByUsername(req.username))
                         throw new UserAlreadyExistsException(req.username);
 
-                User user = new User(0, req.username, encoder.encode(req.password), req.email, UserRole.USER);
+                User user = new User(0, req.username, encoder.encode(req.password),  UserRole.USER);
                 user.validate();
                 gateway.save(user);
 
@@ -45,7 +45,6 @@ public class CreateUser extends AbstractUserInteractor
         public static class RequestModel {
                 @NonNull
                 String username, password;
-                String email;
         }
 
         @Value
