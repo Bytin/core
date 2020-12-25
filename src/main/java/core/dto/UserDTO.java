@@ -1,10 +1,14 @@
 package core.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Value;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
 
         @EqualsAndHashCode.Exclude

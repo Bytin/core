@@ -23,10 +23,10 @@ public class UpdateUserInfo extends AbstractUserInteractor
 
                 User user = gateway.findByUserName(request.oldUsername)
                                 .orElseThrow(() -> new NoSuchUserException(request.oldUsername));
+                User userWithNewInfo = new User(user.getId(), request.username, user.getPassword(), user.getRole());
+                userWithNewInfo.validate();
 
-                user.setUsername(request.username);
-
-                gateway.save(user);
+                gateway.save(userWithNewInfo);
 
                 return new ResponseModel("User info has been updated successfully.");
         }
@@ -36,7 +36,7 @@ public class UpdateUserInfo extends AbstractUserInteractor
         @AllArgsConstructor
         public static class RequestModel {
                 @NonNull
-                String oldUsername, username, email;
+                String oldUsername, username;
         }
 
         @Value

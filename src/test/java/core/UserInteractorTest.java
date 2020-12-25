@@ -86,7 +86,7 @@ public class UserInteractorTest {
 
         @Test
         public void updateUser() {
-                var request = new UpdateUserInfo.RequestModel("john", "josh", "@gmail.com");
+                var request = new UpdateUserInfo.RequestModel("john", "josh");
                 var expected = new UpdateUserInfo.ResponseModel(
                                 "User info has been updated successfully.");
                 var actual = userInteractor.updateUserInfo(request);
@@ -104,8 +104,14 @@ public class UserInteractorTest {
         }
 
         @Test
+        public void updateUserWithBlankNewUsernameThrowsException(){
+                var request = new UpdateUserInfo.RequestModel("alice", "");
+                assertThrows(IllegalArgumentException.class, () -> userInteractor.updateUserInfo(request));
+        }
+
+        @Test
         public void updateUserWithReservedNameThrowsException() {
-                var request = new UpdateUserInfo.RequestModel("julian", "mary", "@gmail.com");
+                var request = new UpdateUserInfo.RequestModel("julian", "mary");
                 assertThrows(UserAlreadyExistsException.class,
                                 () -> userInteractor.updateUserInfo(request));
         }

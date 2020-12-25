@@ -1,7 +1,6 @@
 package core.entity;
 
 import core.dto.UserDTO;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 

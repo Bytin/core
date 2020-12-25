@@ -1,14 +1,17 @@
 package core.dto;
 
 import java.time.LocalDateTime;
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Value;
 
 @Builder
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SnippetDTO {
 
         @EqualsAndHashCode.Exclude
