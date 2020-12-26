@@ -30,10 +30,7 @@ public class CreateSnippet extends AbstractSnippetInteractor
                 return new ResponseModel("Snippet has been successfully saved.");
         }
 
-        private Snippet makeSnippetFromRequest(SnippetDTO req) {
-                if (!userGateway.existsByUsername(req.getOwner().getUsername()))
-                        throw new NoSuchUserException(req.getOwner().getUsername());
-
+        private Snippet makeSnippetFromRequest(SnippetDTO req) { 
                 User owner = userGateway.findByUserName(req.getOwner().getUsername()).orElseThrow(
                                 () -> new NoSuchUserException(req.getOwner().getUsername()));
                 Snippet snippet = new Snippet(req.getTitle(), req.getLanguage(), req.getCode(),
