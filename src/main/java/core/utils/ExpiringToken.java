@@ -5,10 +5,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import core.usecase.UseCaseException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
+@AllArgsConstructor
 public class ExpiringToken {
+
+    public static final long DEFAULT_LIFESPAN_MINUTES = 10;
 
     @NonNull
     private final @Getter UUID uuid;
@@ -19,29 +23,15 @@ public class ExpiringToken {
     private final @Getter LocalDateTime dateCreated;
 
     public ExpiringToken() {
-        this(10);
-    }
-
-    public ExpiringToken(long minutes) {
-        this(Duration.ofMinutes(minutes));
+        this(Duration.ofMinutes(DEFAULT_LIFESPAN_MINUTES));
     }
 
     public ExpiringToken(Duration duration) {
-        lifeSpan = duration;
-        uuid = UUID.randomUUID();
-        dateCreated = LocalDateTime.now();
-    }
-
-    protected ExpiringToken(UUID uuid, Duration lifeSpan) {
-        this.uuid = uuid;
-        this.lifeSpan = lifeSpan;
-        dateCreated = LocalDateTime.now();
+        this(UUID.randomUUID(), duration, LocalDateTime.now());
     }
 
     protected ExpiringToken(ExpiringToken token) {
-        this.uuid = token.uuid;
-        this.lifeSpan = token.lifeSpan;
-        this.dateCreated = token.dateCreated;
+        this(token.uuid, token.lifeSpan, token.dateCreated);
     }
 
     public boolean isExpired() {
