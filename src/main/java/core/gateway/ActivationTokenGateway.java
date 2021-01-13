@@ -6,6 +6,6 @@ import lombok.NonNull;
 
 public interface ActivationTokenGateway extends Gateway<ActivationToken, Long> {
 
-    Optional<ActivationToken> findByUser_username(@NonNull String username);
+    Optional<ActivationToken> findByUsername(@NonNull String username);
 
 }

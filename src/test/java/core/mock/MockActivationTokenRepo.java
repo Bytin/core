@@ -38,7 +38,7 @@ public class MockActivationTokenRepo implements ActivationTokenGateway {
     }
 
     @Override
-    public Optional<ActivationToken> findByUser_username(@NonNull String username) {
+    public Optional<ActivationToken> findByUsername(@NonNull String username) {
         return map.values().stream().filter(token -> token.getUsername().equals(username))
                 .findFirst();
     }

@@ -131,7 +131,7 @@ public class UserInteractorTest {
         var retrievalResponse = userInteractor.retrieveProfile(retrievalRequest);
         assertEquals(UserRole.USER, retrievalResponse.getUser().getRole());
 
-        assertFalse(tokenRepo.findByUser_username(username).isPresent());
+        assertFalse(tokenRepo.findByUsername(username).isPresent());
     }
 
     @Test

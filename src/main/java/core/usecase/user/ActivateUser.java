@@ -35,7 +35,7 @@ public class ActivateUser extends AbstractUserInteractor
     }
 
     ActivationToken validateToken(RequestModel req) {
-        var token = tokenGateway.findByUser_username(req.username)
+        var token = tokenGateway.findByUsername(req.username)
                 .orElseThrow(() -> new UseCaseException("A token is not assigned to " + req.username));
         if(!req.token.equals(token.toString()))
             throw new UseCaseException("That token is not the one assigned.");
