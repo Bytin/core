@@ -52,11 +52,6 @@ public class MockUserRepository implements UserGateway {
     }
 
     @Override
-    public int getSize() {
-        return map.size();
-    }
-
-    @Override
     public boolean existsByUsername(String username) {
         return findByUserName(username).isPresent();
     }

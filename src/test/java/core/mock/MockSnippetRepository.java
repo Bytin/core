@@ -29,11 +29,6 @@ public class MockSnippetRepository implements SnippetGateway {
         }
 
         @Override
-        public int getSize() {
-                return map.size();
-        }
-
-        @Override
         public Collection<Snippet> findAll() {
                 return map.values();
         }

@@ -28,11 +28,6 @@ public class MockActivationTokenRepo implements ActivationTokenGateway {
     }
 
     @Override
-    public int getSize() {
-        return 0;
-    }
-
-    @Override
     public Collection<ActivationToken> findAll() {
         return map.values();
     }

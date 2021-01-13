@@ -22,7 +22,7 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
                 var snippets = gateway.findAll();
                 var pageOfSnippets = pageSection(snippets, request.page, request.pageSize);
 
-                return new ResponseModel(gateway.getSize(), pageOfSnippets.stream()
+                return new ResponseModel(snippets.size(), pageOfSnippets.stream()
                                 .map(snip -> snip.toSnippetDto()).collect(Collectors.toList()));
         }
 
