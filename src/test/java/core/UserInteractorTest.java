@@ -2,14 +2,16 @@ package core;
 
 import core.boundary.*;
 import core.dto.UserDTO;
+import core.entity.ActivationToken;
 import core.entity.User.UserRole;
 import core.mock.MockUserRepository;
 import core.usecase.UseCaseException.NoSuchUserException;
 import core.usecase.UseCaseException.UserAlreadyExistsException;
 import core.usecase.user.*;
-
+import core.usecase.user.CreateUser.UserRegistrationCallback;
 import static org.junit.jupiter.api.Assertions.*;
-
+import java.util.ArrayList;
+import java.util.UUID;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,20 +28,27 @@ public class UserInteractorTest {
 
     public static void createUsers() {
         var names = new String[] {"john", "mary", "echidna", "julian"};
+        var callsToCallback = new ArrayList<Integer>();
         for (String username : names) {
             var request =
-                    new CreateUser.RequestModel(username, username + "@gmail.com", "asdf90234");
+                    new CreateUser.RequestModel(username, username + "@gmail.com", "asdf90234", token -> {
+                        callsToCallback.add(1);
+                        assertTrue(token instanceof ActivationToken);
+                        assertDoesNotThrow(() -> UUID.fromString(token.toString()));
+                    });
             var expected = new CreateUser.ResponseModel("User '" + username + "' created.");
             var actual = userInteractor.createUser(request, chars -> chars.toString());
             assertEquals(expected, actual);
         }
+        assertEquals(names.length, callsToCallback.size());
     }
 
     @Test
     public void createUsersThrowsException() {
-        var blankUsernameInRequest = new CreateUser.RequestModel("", "af@gmail.com", "asdfwetewt");
-        var blankEmailInRequest = new CreateUser.RequestModel("asdf", "", "asdfwetewt");
-        var shortPasswordInRequest = new CreateUser.RequestModel("asdf", "asdf@gmail.com", "asdf");
+        UserRegistrationCallback cb = token -> {};
+        var blankUsernameInRequest = new CreateUser.RequestModel("", "af@gmail.com", "asdfwetewt", cb);
+        var blankEmailInRequest = new CreateUser.RequestModel("asdf", "", "asdfwetewt", cb);
+        var shortPasswordInRequest = new CreateUser.RequestModel("asdf", "asdf@gmail.com", "asdf", cb);
 
         assertThrows(IllegalArgumentException.class,
                 () -> userInteractor.createUser(blankUsernameInRequest, chars -> chars.toString()));
@@ -49,18 +58,19 @@ public class UserInteractorTest {
                 () -> userInteractor.createUser(shortPasswordInRequest, chars -> chars.toString()));
 
         assertThrows(NullPointerException.class, () -> {
-            var nullPassword = new CreateUser.RequestModel("asdfasdf", "asdf@gmail.com", null);
+            var nullPassword = new CreateUser.RequestModel("asdfasdf", "asdf@gmail.com", null, cb);
             userInteractor.createUser(nullPassword, chars -> chars.toString());
         });
         assertThrows(NullPointerException.class, () -> {
-            var nullUsername = new CreateUser.RequestModel(null, "asd@gmail.com", "asdfwe3244");
+            var nullUsername = new CreateUser.RequestModel(null, "asd@gmail.com", "asdfwe3244", cb);
             userInteractor.createUser(nullUsername, chars -> chars.toString());
         });
     }
 
     @Test
     public void createDuplicateUserThrowsException() {
-        var request = new CreateUser.RequestModel("mary", "mary@gmail.com", "adsfsdf");
+        UserRegistrationCallback cb = token -> {};
+        var request = new CreateUser.RequestModel("mary", "mary@gmail.com", "adsfsdf", cb);
         assertThrows(UserAlreadyExistsException.class,
                 () -> userInteractor.createUser(request, chars -> chars.toString()));
     }
