@@ -10,32 +10,30 @@ public class User {
     final long id;
 
     @NonNull
-    String username, password;
+    String username, email, password;
 
     @NonNull
     UserRole role;
 
-    public void validate(){
-        if(username.isBlank())
+    public void validate() {
+        if (username.isBlank())
             throw new IllegalArgumentException("Username can't be blank.");
-        if(password.length() < 6)
+        if (email.isBlank())
+            throw new IllegalArgumentException("Email can't be blank.");
+        if (password.length() < 6)
             throw new IllegalArgumentException("Password should be at least 6 characters long.");
-        //TODO validate email and password patterns
+        // TODO validate email and password patterns
     }
 
-    public UserDTO toUserDto(){
-            return new UserDTO(id, username);
+    public UserDTO toUserDto() {
+        return new UserDTO(id, username, email, role);
     }
 
     public enum UserRole {
 
-        USER, ADMIN, SUSPENDED;
+        USER, ADMIN, SUSPENDED, UNACTIVATED;
 
-        /**
-         * @return the string representation of this {@link UserRole}, as prefixed with
-         *         "ROLE_"
-         */
-        public String getRole() {
+        public String toString() {
             return "ROLE_" + name();
         }
     }

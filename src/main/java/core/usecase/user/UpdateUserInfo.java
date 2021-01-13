@@ -23,7 +23,7 @@ public class UpdateUserInfo extends AbstractUserInteractor
 
                 User user = gateway.findByUserName(request.oldUsername)
                                 .orElseThrow(() -> new NoSuchUserException(request.oldUsername));
-                User userWithNewInfo = new User(user.getId(), request.username, user.getPassword(), user.getRole());
+                User userWithNewInfo = new User(user.getId(), request.username, user.getEmail(), user.getPassword(), user.getRole());
                 userWithNewInfo.validate();
 
                 gateway.save(userWithNewInfo);

@@ -1,5 +1,6 @@
 package core.dto;
 
+import core.entity.User.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ public class UserDTO {
         @EqualsAndHashCode.Exclude
         private long id;
         @NonNull
-        private String username;
+        private String username, email;
+        private UserRole role;
 
 }
