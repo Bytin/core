@@ -10,7 +10,7 @@ public interface UserIOBoundary extends IOBoundary {
     CreateUser.ResponseModel createUser(CreateUser.RequestModel requestModel,
             CreateUser.Encoder encoder);
 
-    RetrieveProfile.ResponseModel retrieveUserProfile(RetrieveProfile.RequestModel requestModel);
+    RetrieveProfile.ResponseModel retrieveProfile(RetrieveProfile.RequestModel requestModel);
 
     UpdateUserInfo.ResponseModel updateUserInfo(RequestModel request);
 

@@ -91,7 +91,7 @@ public class UserInteractorTest {
         var request = new RetrieveProfile.RequestModel(username);
         var expected = new RetrieveProfile.ResponseModel(
                 new UserDTO(0, username, username + "@gmail.com", UserRole.UNACTIVATED));
-        var actual = userInteractor.retrieveUserProfile(request);
+        var actual = userInteractor.retrieveProfile(request);
         assertEquals(expected.getUser(), actual.getUser());
     }
 
@@ -101,9 +101,9 @@ public class UserInteractorTest {
         var blankUsernameInRequest = new RetrieveProfile.RequestModel("");
 
         assertThrows(NoSuchUserException.class,
-                () -> userInteractor.retrieveUserProfile(blankUsernameInRequest));
+                () -> userInteractor.retrieveProfile(blankUsernameInRequest));
         assertThrows(NoSuchUserException.class,
-                () -> userInteractor.retrieveUserProfile(nullUsernameInRequest));
+                () -> userInteractor.retrieveProfile(nullUsernameInRequest));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class UserInteractorTest {
                 activationResponse.getMessage());
 
         var retrievalRequest = new RetrieveProfile.RequestModel(username);
-        var retrievalResponse = userInteractor.retrieveUserProfile(retrievalRequest);
+        var retrievalResponse = userInteractor.retrieveProfile(retrievalRequest);
         assertEquals(UserRole.USER, retrievalResponse.getUser().getRole());
 
         assertFalse(tokenRepo.findByUser_username(username).isPresent());
@@ -153,7 +153,7 @@ public class UserInteractorTest {
                 () -> userInteractor.activateUser(activationRequest));
 
         var retrievalRequest = new RetrieveProfile.RequestModel(username);
-        var retrievalResponse = userInteractor.retrieveUserProfile(retrievalRequest);
+        var retrievalResponse = userInteractor.retrieveProfile(retrievalRequest);
         assertEquals(UserRole.UNACTIVATED, retrievalResponse.getUser().getRole());
     }
 
@@ -167,11 +167,11 @@ public class UserInteractorTest {
         var request1 = new RetrieveProfile.RequestModel("josh");
         var expected1 = new RetrieveProfile.ResponseModel(
                 new UserDTO(0, "josh", "john@gmail.com", UserRole.UNACTIVATED));
-        var actual1 = userInteractor.retrieveUserProfile(request1);
+        var actual1 = userInteractor.retrieveProfile(request1);
         assertEquals(expected1, actual1);
 
         var request2 = new RetrieveProfile.RequestModel("john");
-        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveUserProfile(request2));
+        assertThrows(NoSuchUserException.class, () -> userInteractor.retrieveProfile(request2));
     }
 
     @Test

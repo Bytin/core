@@ -22,7 +22,7 @@ public class UserInteractorManager extends AbstractUserInteractor implements Use
 	}
 
 	@Override
-	public core.usecase.user.RetrieveProfile.ResponseModel retrieveUserProfile(RequestModel requestModel) {
+	public core.usecase.user.RetrieveProfile.ResponseModel retrieveProfile(RequestModel requestModel) {
 		return new RetrieveProfile(gateway).execute(requestModel);
 	}
 
