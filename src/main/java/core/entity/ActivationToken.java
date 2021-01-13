@@ -3,15 +3,16 @@ package core.entity;
 import core.utils.ExpiringToken;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class ActivationToken extends ExpiringToken {
-    protected @Getter String username;
+    private long id;
+    private String username;
 
-    public ActivationToken(String username, ExpiringToken token) {
+    public ActivationToken(long id, String username, ExpiringToken token) {
         super(token);
         this.username = username;
+        this.id = id;
     }
 }

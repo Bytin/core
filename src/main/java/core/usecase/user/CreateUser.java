@@ -42,7 +42,7 @@ public class CreateUser extends AbstractUserInteractor
     }
 
     ActivationToken createTokenFor(User user) {
-        ActivationToken token = new ActivationToken(user.getUsername());
+        ActivationToken token = new ActivationToken(0, user.getUsername());
         tokenGateway.save(token);
         return token;
     }

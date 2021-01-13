@@ -14,9 +14,9 @@ public class ExpiringToken {
     private final @Getter UUID uuid;
 
     @NonNull
-    private final Duration lifeSpan;
+    private final @Getter Duration lifeSpan;
 
-    private final LocalDateTime dateCreated;
+    private final @Getter LocalDateTime dateCreated;
 
     public ExpiringToken() {
         this(10);

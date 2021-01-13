@@ -145,7 +145,7 @@ public class UserInteractorTest {
         userInteractor.createUser(createRequest, chars -> chars.toString());
 
         long milliseconds = 5;
-        tokenRepo.save(new ActivationToken(username, new TestToken(UUID.fromString(tokenStr.toString()), milliseconds)));
+        tokenRepo.save(new ActivationToken(0, username, new TestToken(UUID.fromString(tokenStr.toString()), milliseconds)));
         Thread.sleep(milliseconds);
 
         var activationRequest = new ActivateUser.RequestModel(username, tokenStr.toString());
