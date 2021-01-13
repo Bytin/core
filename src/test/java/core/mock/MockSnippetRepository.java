@@ -62,4 +62,9 @@ public class MockSnippetRepository implements SnippetGateway {
                 map.remove(id);
         }
 
+        @Override
+        public void delete(Snippet snippet) {
+            map.remove(snippet.getId());
+        }
+
 }

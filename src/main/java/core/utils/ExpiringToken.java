@@ -4,7 +4,7 @@ package core.utils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+import core.usecase.UseCaseException;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -51,5 +51,15 @@ public class ExpiringToken {
     @Override
     public String toString() {
         return uuid.toString();
+    }
+
+    public static class TokenHasExpiredException extends UseCaseException{
+
+        private static final long serialVersionUID = 1L;
+
+        public TokenHasExpiredException() {
+            super("That token has expired.");
+        }
+        
     }
 }

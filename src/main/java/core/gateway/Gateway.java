@@ -14,4 +14,6 @@ public interface Gateway<T, ID> {
     Collection<T> findAll();
 
     void deleteById(ID id);
+
+    void delete(T t);
 }

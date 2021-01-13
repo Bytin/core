@@ -3,6 +3,7 @@ package core.usecase.user;
 import core.entity.ActivationToken;
 import core.entity.User;
 import core.entity.User.UserRole;
+import core.gateway.ActivationTokenGateway;
 import core.gateway.UserGateway;
 import core.usecase.Command;
 import core.usecase.UseCaseException.*;
@@ -15,8 +16,11 @@ import lombok.Value;
 public class CreateUser extends AbstractUserInteractor
         implements Command<CreateUser.RequestModel, CreateUser.ResponseModel> {
 
-    CreateUser(UserGateway gateway) {
+    final ActivationTokenGateway tokenGateway;
+
+    CreateUser(UserGateway gateway, ActivationTokenGateway tokenGateway) {
         super(gateway);
+        this.tokenGateway = tokenGateway;
     }
 
     Encoder encoder;
@@ -37,8 +41,9 @@ public class CreateUser extends AbstractUserInteractor
         return new ResponseModel(String.format("User '%s' created.", req.username));
     }
 
-    ActivationToken createTokenFor(User user){
+    ActivationToken createTokenFor(User user) {
         ActivationToken token = new ActivationToken(user.getUsername());
+        tokenGateway.save(token);
         return token;
     }
 

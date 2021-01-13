@@ -33,7 +33,7 @@ public class SnippetInteractorTest {
                 var snippetDb = new MockSnippetRepository();
                 repoCleaner = () -> snippetDb.clearRepo();
                 snippetInteractor = new SnippetInteractorManager(snippetDb, userDb);
-                userInteractor = new UserInteractorManager(userDb);
+                userInteractor = new UserInteractorManager(userDb, new MockActivationTokenRepo());
                 dummyOwnedSnippets = new DummnyOwnedSnippets(snippetInteractor, userDb.findAll());
         }
 
