@@ -31,8 +31,8 @@ public class MockUserRepository implements UserGateway {
         long id = user.getId();
         if (id == 0)
             id = Math.max(1, map.size() + 1);
-        map.put(id, new User(id, user.getUsername(), user.getEmail(), user.getPassword(),
-                user.getRole()));
+        map.put(id, User.builder().id(id).email(user.getEmail()).username(user.getUsername())
+        .password(user.getPassword()).role(user.getRole()).build());
     }
 
     @Override

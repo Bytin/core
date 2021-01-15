@@ -1,19 +1,23 @@
 package core.entity;
 
 import core.dto.UserDTO;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.Value;
 
-@Data
-public class User {
+@Value
+@Builder
+@AllArgsConstructor
+public final class User {
 
     final long id;
 
     @NonNull
-    String username, email, password;
+    final String username, email, password;
 
     @NonNull
-    UserRole role;
+    final UserRole role;
 
     public void validate() {
         if (username.isBlank())

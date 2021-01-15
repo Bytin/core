@@ -35,16 +35,17 @@ public class ActivateUser extends AbstractUserInteractor
     }
 
     ActivationToken validateToken(RequestModel req) {
-        var token = tokenGateway.findByUsername(req.username)
-                .orElseThrow(() -> new UseCaseException("A token is not assigned to " + req.username));
-        if(!req.token.equals(token.toString()))
+        var token = tokenGateway.findByUsername(req.username).orElseThrow(
+                () -> new UseCaseException("A token is not assigned to " + req.username));
+        if (!req.token.equals(token.toString()))
             throw new UseCaseException("That token is not the one assigned.");
         return token;
     }
 
     void activateUser(User user, ActivationToken token) {
         if (!token.isExpired())
-            user.setRole(UserRole.USER);
+            gateway.save(User.builder().id(user.getId()).email(user.getEmail()).username(user.getUsername())
+                    .password(user.getPassword()).role(UserRole.USER).build());
         else
             throw new TokenHasExpiredException();
         tokenGateway.delete(token);
