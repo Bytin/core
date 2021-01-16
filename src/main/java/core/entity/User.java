@@ -34,11 +34,6 @@ public final class User {
     }
 
     public enum UserRole {
-
-        USER, ADMIN, SUSPENDED, UNACTIVATED;
-
-        public String toString() {
-            return "ROLE_" + name();
-        }
+        USER, ADMIN, SUSPENDED, UNACTIVATED
     }
 }
