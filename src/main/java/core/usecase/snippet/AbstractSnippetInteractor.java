@@ -1,25 +1,27 @@
 package core.usecase.snippet;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
+import core.dto.SnippetDTO;
+import core.entity.Snippet;
 import core.gateway.SnippetGateway;
+import core.utils.Page;
 
 public abstract class AbstractSnippetInteractor {
 
-        SnippetGateway gateway;
+    SnippetGateway gateway;
 
-        AbstractSnippetInteractor(SnippetGateway gateway) {
-                this.gateway = gateway;
-        }
+    AbstractSnippetInteractor(SnippetGateway gateway) {
+        this.gateway = gateway;
+    }
 
+    static Page<SnippetDTO> mapSnippetsToDtos(Page<Snippet> page) {
+        var response = new Page<SnippetDTO>();
+        response.setNumber(page.getNumber());
+        response.setSize(page.getSize());
+        response.setTotal(page.getTotal());
+        response.setContent(page.getContent().stream().map(snip -> snip.toSnippetDto())
+                .collect(Collectors.toList()));
+        return response;
+    }
 
-
-        static <T> Collection<T> pageSection(Collection<T> collection, int page, int pageSize) {
-                List<T> list = List.copyOf(collection);
-                int offset = (page - 1) * pageSize;
-                int end = Math.min(list.size(), offset + pageSize);
-                if (end < offset)
-                        return List.of();
-                return list.subList(offset, end);
-        }
 }
