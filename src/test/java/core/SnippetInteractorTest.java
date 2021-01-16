@@ -203,7 +203,7 @@ public class SnippetInteractorTest {
         UserDTO owner = userDb.findAll().stream().findAny().get().toUserDto();
         Collection<SnippetDTO> dummySnippets =
                 dummyOwnedSnippets.createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
-        var request = new RetrieveAllSnippetsOfUser.RequestModel(owner, 1, pageSize);
+        var request = new RetrieveAllSnippetsOfUser.RequestModel(owner.getUsername(), 1, pageSize);
         
         var page = new Page<SnippetDTO>(1, 0, pageSize,
                 dummySnippets.stream().limit(pageSize).collect(Collectors.toList()));
@@ -214,7 +214,7 @@ public class SnippetInteractorTest {
         assertIterableEquals(expectedResponse.getPage().getContent(),
                 actualResponse.getPage().getContent());
 
-        var requestSecondPage = new RetrieveAllSnippetsOfUser.RequestModel(owner, 3, pageSize);
+        var requestSecondPage = new RetrieveAllSnippetsOfUser.RequestModel(owner.getUsername(), 3, pageSize);
         expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(
                 new Page<SnippetDTO>(1, 0, pageSize, List.of()));
 

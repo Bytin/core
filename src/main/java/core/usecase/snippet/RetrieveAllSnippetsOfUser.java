@@ -1,7 +1,6 @@
 package core.usecase.snippet;
 
 import core.dto.SnippetDTO;
-import core.dto.UserDTO;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
 import core.usecase.Command;
@@ -21,7 +20,7 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Page<Snippet> page = gateway.findAllByOwnerUsername(request.owner.getUsername(), request.page, request.pageSize);
+        Page<Snippet> page = gateway.findAllByOwnerUsername(request.getUsername(), request.page, request.pageSize);
         return new ResponseModel(page.map(snip -> snip.toSnippetDto()));
     }
 
@@ -30,7 +29,7 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
     @AllArgsConstructor
     public static class RequestModel {
         @NonNull
-        UserDTO owner;
+        String username;
         int page, pageSize;
     }
 
