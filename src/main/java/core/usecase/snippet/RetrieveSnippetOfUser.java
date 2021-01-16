@@ -24,7 +24,7 @@ public class RetrieveSnippetOfUser extends AbstractSnippetInteractor implements
                                 .orElseThrow(() -> new NoSuchSnippetException(request.snippetId));
 
                 if (!snippet.getOwner().getUsername().equals(request.username))
-                        throw new DifferentSnippetOwnerException(snippet.getOwner().getUsername());
+                        throw new DifferentSnippetOwnerException(request.username);
 
                 return new ResponseModel(snippet.toSnippetDto());
         }

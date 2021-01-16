@@ -20,7 +20,7 @@ public class RetrieveAllSnippetsOfUser extends AbstractSnippetInteractor impleme
 
     @Override
     public ResponseModel execute(RequestModel request) {
-        Page<Snippet> page = gateway.findAllByOwnerUsername(request.getUsername(), request.page, request.pageSize);
+        Page<Snippet> page = gateway.findAllByOwnerUsername(request.username, request.page, request.pageSize);
         return new ResponseModel(page.map(snip -> snip.toSnippetDto()));
     }
 
