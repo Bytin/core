@@ -171,7 +171,7 @@ public class SnippetInteractorTest {
         for (pageSize = 5; pageSize > 0; pageSize--) {
             var request = new RetrieveAllPublicSnippets.RequestModel(page, pageSize);
             RetrieveAllPublicSnippets.ResponseModel response =
-                    snippetInteractor.RetrieveAllPublicSnippets(request);
+                    snippetInteractor.retrieveAllPublicSnippets(request);
             assertEquals(pageSize, response.getPage().getSize());
             var expected = dummyOwnedSnippets.getOwnerSnippetMap().values().stream()
                     .filter(s -> !s.isHidden()).limit(pageSize).collect(Collectors.toList());
@@ -180,7 +180,7 @@ public class SnippetInteractorTest {
 
         page = 2;
         var request = new RetrieveAllPublicSnippets.RequestModel(page, pageSize);
-        var response = snippetInteractor.RetrieveAllPublicSnippets(request);
+        var response = snippetInteractor.retrieveAllPublicSnippets(request);
         assertIterableEquals(List.of(), response.getPage().getContent());
     }
 
@@ -188,7 +188,7 @@ public class SnippetInteractorTest {
     void getMostRecentSnippets() {
         var request = new RetrieveRecentSnippets.RequestModel(3);
         RetrieveRecentSnippets.ResponseModel response =
-                snippetInteractor.RetrieveRecentSnippets(request);
+                snippetInteractor.retrieveRecentSnippets(request);
         var recentSnippets = response.getSnippets();
 
         assertEquals(3, recentSnippets.size());
