@@ -20,7 +20,7 @@ public class RetrieveAllPublicSnippets extends AbstractSnippetInteractor impleme
     @Override
     public ResponseModel execute(RequestModel request) {
         Page<Snippet> page = gateway.findAllPublic(request.page, request.pageSize);
-        return new ResponseModel(mapSnippetsToDtos(page));
+        return new ResponseModel(page.map(snip -> snip.toSnippetDto()));
     }
 
     @Data
