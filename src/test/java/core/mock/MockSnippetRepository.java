@@ -92,11 +92,7 @@ public class MockSnippetRepository implements SnippetGateway {
     }
 
     private <T> Page<T> newPage(int page, int pageSize, Collection<T> pubSnippets, int totalPages) {
-        var pageOfSnippets = new Page<T>();
-        pageOfSnippets.setTotal(totalPages);
-        pageOfSnippets.setNumber(page);
-        pageOfSnippets.setSize(pageSize);
-        pageOfSnippets.setContent(pubSnippets);
+        var pageOfSnippets = new Page<T>(page, totalPages, pageSize, pubSnippets);
         return pageOfSnippets;
     }
 
