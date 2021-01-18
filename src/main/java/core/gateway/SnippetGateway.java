@@ -1,6 +1,7 @@
 package core.gateway;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import core.utils.Page;
 import core.entity.Snippet;
@@ -15,6 +16,6 @@ public interface SnippetGateway extends Gateway<Snippet, Long> {
 
   Page<Snippet> findAllByOwnerUsername(String owner, int page, int pageSize);
 
-  Stream<Snippet> streamAll();
+  void withPublicSnippetsStream(Consumer<Stream<Snippet>> consumer);
 
 }

@@ -9,6 +9,8 @@ public interface Gateway<T, ID> {
 
     void save(T o);
 
+    long count();
+
     Collection<T> findAll();
 
     void deleteById(ID id);

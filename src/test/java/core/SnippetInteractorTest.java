@@ -1,23 +1,42 @@
 package core;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import core.boundary.*;
+import core.boundary.SnippetIOBoundary;
+import core.boundary.UserIOBoundary;
 import core.dto.SnippetDTO;
 import core.dto.UserDTO;
+import core.gateway.SnippetGateway;
 import core.gateway.UserGateway;
-import core.mock.*;
-import core.usecase.UseCaseException.*;
-import core.usecase.snippet.*;
-import core.usecase.user.*;
+import core.mock.MockActivationTokenRepo;
+import core.mock.MockSnippetRepository;
+import core.mock.MockUserRepository;
+import core.usecase.UseCaseException.DifferentSnippetOwnerException;
+import core.usecase.UseCaseException.HiddenSnippetException;
+import core.usecase.UseCaseException.NoSuchSnippetException;
+import core.usecase.snippet.CreateSnippet;
+import core.usecase.snippet.DeleteSnippetOfUser;
+import core.usecase.snippet.RetrieveAllPublicSnippets;
+import core.usecase.snippet.RetrieveAllSnippetsOfUser;
+import core.usecase.snippet.RetrievePublicSnippet;
+import core.usecase.snippet.RetrieveRecentSnippets;
+import core.usecase.snippet.RetrieveSnippetOfUser;
+import core.usecase.snippet.SearchPublicSnippets;
+import core.usecase.snippet.SnippetInteractorManager;
+import core.usecase.snippet.UpdateSnippet;
+import core.usecase.snippet.SearchPublicSnippets.Mode;
+import core.usecase.user.UserInteractorManager;
 import core.utils.Page;
 
 public class SnippetInteractorTest {
@@ -27,12 +46,13 @@ public class SnippetInteractorTest {
     static DummnyOwnedSnippets dummyOwnedSnippets;
     static UserGateway userDb;
     static Runnable repoCleaner;
+    static SnippetGateway snippetDb;
 
     @BeforeAll
     public static void setUp() {
         userDb = new MockUserRepository();
-        var snippetDb = new MockSnippetRepository();
-        repoCleaner = () -> snippetDb.clearRepo();
+        snippetDb = new MockSnippetRepository();
+        repoCleaner = () -> ((MockSnippetRepository) snippetDb).clearRepo();
         snippetInteractor = new SnippetInteractorManager(snippetDb, userDb);
         userInteractor = new UserInteractorManager(userDb, new MockActivationTokenRepo());
         dummyOwnedSnippets = new DummnyOwnedSnippets(snippetInteractor, userDb.findAll());
@@ -204,7 +224,7 @@ public class SnippetInteractorTest {
         Collection<SnippetDTO> dummySnippets =
                 dummyOwnedSnippets.createManyDummySnippetsOwnedBy(owner, hidden, pageSize);
         var request = new RetrieveAllSnippetsOfUser.RequestModel(owner.getUsername(), 1, pageSize);
-        
+
         var page = new Page<SnippetDTO>(1, 0, pageSize,
                 dummySnippets.stream().limit(pageSize).collect(Collectors.toList()));
         var expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(page);
@@ -214,14 +234,16 @@ public class SnippetInteractorTest {
         assertIterableEquals(expectedResponse.getPage().getContent(),
                 actualResponse.getPage().getContent());
 
-        var requestSecondPage = new RetrieveAllSnippetsOfUser.RequestModel(owner.getUsername(), 3, pageSize);
+        var requestSecondPage =
+                new RetrieveAllSnippetsOfUser.RequestModel(owner.getUsername(), 3, pageSize);
         expectedResponse = new RetrieveAllSnippetsOfUser.ResponseModel(
                 new Page<SnippetDTO>(1, 0, pageSize, List.of()));
 
 
         assertEquals(expectedResponse.getPage().getSize(), actualResponse.getPage().getSize());
         actualResponse = snippetInteractor.retrieveSnippetsOfUser(requestSecondPage);
-        assertIterableEquals(expectedResponse.getPage().getContent(), actualResponse.getPage().getContent());
+        assertIterableEquals(expectedResponse.getPage().getContent(),
+                actualResponse.getPage().getContent());
 
     }
 
@@ -235,6 +257,52 @@ public class SnippetInteractorTest {
         var request = new RetrievePublicSnippet.RequestModel(snippetId);
         assertThrows(NoSuchSnippetException.class,
                 () -> snippetInteractor.retrievePublicSnippet(request));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"java, SIMPLE, 0, 2", "jav., REGEX, -8, 2", "jav.*, REGEX, 1, 0"})
+    public void searchPublicSnippetsTest(String phrase, String mode, int pageNum, int pageSize) {
+        var request = new SearchPublicSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum,
+                pageSize);
+        var response = snippetInteractor.searchPublicSnippets(request);
+        var page = response.getPage();
+
+        pageSize = pageSize < 1 ? 1 : pageSize;
+        pageNum = pageNum < 0 ? 0 : pageNum;
+        assertEquals(pageNum, page.getNumber());
+        assertEquals(pageSize, page.getSize());
+        assertEquals(snippetDb.count() / pageSize, page.getTotal());
+        assertFalse(page.getContent().isEmpty());
+
+        long hiddenSnippetsNum = page.getContent().stream().filter(SnippetDTO::isHidden).count();
+        assertEquals(0, hiddenSnippetsNum);
+
+        List<SnippetDTO> content = new ArrayList<>(page.getContent());
+        assertTrue(content.size() <= pageSize);
+        boolean lastSnippetInContentIsNotFirstInDb = content.get(content.size() - 1).getId() != 1;
+        assertTrue(lastSnippetInContentIsNotFirstInDb);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"SIMPLE, 0, 0", "REGEX, -8, -2"})
+    void searchPublicSnippetsTestValidateRequest(String mode, int pageNum, int pageSize){
+
+        var request = new SearchPublicSnippets.RequestModel("java", Mode.valueOf(mode), pageNum,
+                pageSize);
+        var response = snippetInteractor.searchPublicSnippets(request);
+        var page = response.getPage();
+
+        pageNum = 0; pageSize = 1;
+        assertEquals(pageNum, page.getNumber());
+        assertEquals(pageSize, page.getSize());
+        assertEquals(snippetDb.count() / pageSize, page.getTotal());
+        assertFalse(page.getContent().isEmpty());
+
+        long hiddenSnippetsNum = page.getContent().stream().filter(SnippetDTO::isHidden).count();
+        assertEquals(0, hiddenSnippetsNum);
+
+        List<SnippetDTO> content = new ArrayList<>(page.getContent());
+        assertTrue(content.size() <= pageSize);
     }
 
 }

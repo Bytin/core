@@ -48,4 +48,9 @@ public class MockActivationTokenRepo implements ActivationTokenGateway {
         map.remove(token.getUuid().getMostSignificantBits());
     }
 
+    @Override
+    public long count() {
+        return map.values().size();
+    }
+
 }

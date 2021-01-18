@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public final class Page<T> {
-    private int number, total, size;
+    private long number, total, size;
     private Collection<T> content;
 
     public <R> Page<R> map(Function<T, R> mapper) {

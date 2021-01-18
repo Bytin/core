@@ -66,4 +66,9 @@ public class MockUserRepository implements UserGateway {
         map.remove(user.getId());
     }
 
+    @Override
+    public long count() {
+        return map.size();
+    }
+
 }
