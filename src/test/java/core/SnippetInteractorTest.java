@@ -260,7 +260,8 @@ public class SnippetInteractorTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"java, SIMPLE, 0, 2", "jav., REGEX, -8, 2", "jav.*, REGEX, 1, 0"})
+    @CsvSource(value = {"java, SIMPLE, 0, 2", "jav., REGEX, -8, 2", "jav.*, REGEX, 1, 0",
+            "jav, REGEX, 1, 0"})
     public void searchPublicSnippetsTest(String phrase, String mode, int pageNum, int pageSize) {
         var request = new SearchPublicSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum,
                 pageSize);
@@ -284,15 +285,25 @@ public class SnippetInteractorTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"SIMPLE", "REGEX"})
+    void searchSnippetsNoneFoundTest(String mode){
+        var request = new SearchPublicSnippets.RequestModel("jvs", Mode.valueOf(mode), 0,
+                10);
+        var response = snippetInteractor.searchPublicSnippets(request);
+        assertTrue(response.getPage().isEmpty());
+    }
+
+    @ParameterizedTest
     @CsvSource(value = {"SIMPLE, 0, 0", "REGEX, -8, -2"})
-    void searchPublicSnippetsTestValidateRequest(String mode, int pageNum, int pageSize){
+    void searchPublicSnippetsTestValidateRequest(String mode, int pageNum, int pageSize) {
 
         var request = new SearchPublicSnippets.RequestModel("java", Mode.valueOf(mode), pageNum,
                 pageSize);
         var response = snippetInteractor.searchPublicSnippets(request);
         var page = response.getPage();
 
-        pageNum = 0; pageSize = 1;
+        pageNum = 0;
+        pageSize = 1;
         assertEquals(pageNum, page.getNumber());
         assertEquals(pageSize, page.getSize());
         assertEquals(snippetDb.count() / pageSize, page.getTotal());

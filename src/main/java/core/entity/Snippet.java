@@ -45,7 +45,7 @@ public class Snippet {
         }
 
         public boolean containsPattern(String regex){
-            return findWherein(string -> Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(string).find());
+            return findWherein(string -> string != null && Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(string).find());
         }
 
         public boolean findWherein(OnSnippetField<Boolean> on){

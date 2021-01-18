@@ -22,4 +22,8 @@ public final class Page<T> {
         newPage.content = content.stream().map(mapper).collect(Collectors.toList());
         return newPage;
     }
+
+    public boolean isEmpty() {
+      return content.isEmpty();
+    }
 }
