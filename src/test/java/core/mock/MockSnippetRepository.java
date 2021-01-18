@@ -2,6 +2,7 @@ package core.mock;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import core.utils.Page;
 import core.entity.Snippet;
 import core.gateway.SnippetGateway;
@@ -95,6 +96,11 @@ public class MockSnippetRepository implements SnippetGateway {
         pageOfSnippets.setSize(pageSize);
         pageOfSnippets.setContent(pubSnippets);
         return pageOfSnippets;
+    }
+
+    @Override
+    public Stream<Snippet> streamAll() {
+        return map.values().stream();
     }
 
 }
