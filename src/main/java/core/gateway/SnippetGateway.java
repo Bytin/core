@@ -16,6 +16,6 @@ public interface SnippetGateway extends Gateway<Snippet, Long> {
 
   Page<Snippet> findAllByOwnerUsername(String owner, int page, int pageSize);
 
-  void withPublicSnippetsStream(Consumer<Stream<Snippet>> consumer);
+  void withSnippetsStream(Consumer<Stream<Snippet>> consumer);
 
 }

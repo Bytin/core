@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,10 +33,10 @@ import core.usecase.snippet.RetrieveAllSnippetsOfUser;
 import core.usecase.snippet.RetrievePublicSnippet;
 import core.usecase.snippet.RetrieveRecentSnippets;
 import core.usecase.snippet.RetrieveSnippetOfUser;
-import core.usecase.snippet.SearchPublicSnippets;
+import core.usecase.snippet.SearchSnippets;
 import core.usecase.snippet.SnippetInteractorManager;
 import core.usecase.snippet.UpdateSnippet;
-import core.usecase.snippet.SearchPublicSnippets.Mode;
+import core.usecase.snippet.SearchSnippets.Mode;
 import core.usecase.user.UserInteractorManager;
 import core.utils.Page;
 
@@ -260,11 +261,12 @@ public class SnippetInteractorTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"java, SIMPLE, 0, 2", "jav., REGEX, -8, 2", "jav.*, REGEX, 1, 0",
-            "jav, REGEX, 1, 0"})
-    public void searchPublicSnippetsTest(String phrase, String mode, int pageNum, int pageSize) {
-        var request = new SearchPublicSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum,
-                pageSize);
+    @CsvSource(value = {"java, SIMPLE, 0, 2, false", "jav., REGEX, 0, 2, false",
+            "jav.*, REGEX, 1, 1, true", "jav, REGEX, 1, 3, true", "jav, SIMPLE, 1, 10, true"})
+    public void searchSnippetsTest(String phrase, String mode, int pageNum, int pageSize,
+            boolean hidden) {
+        var request = new SearchSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum, pageSize,
+                Predicate.not(snippet -> snippet.isHidden() == hidden));
         var response = snippetInteractor.searchPublicSnippets(request);
         var page = response.getPage();
 
@@ -273,32 +275,34 @@ public class SnippetInteractorTest {
         assertEquals(pageNum, page.getNumber());
         assertEquals(pageSize, page.getSize());
         assertEquals(snippetDb.count() / pageSize, page.getTotal());
-        assertFalse(page.getContent().isEmpty());
+        assertFalse(page.getContent().isEmpty() && pageNum < page.getTotal());
 
         long hiddenSnippetsNum = page.getContent().stream().filter(SnippetDTO::isHidden).count();
-        assertEquals(0, hiddenSnippetsNum);
+        assertEquals(hidden ? 0 : 2, hiddenSnippetsNum);
+        assertTrue(page.getContent().size() <= pageSize);
 
         List<SnippetDTO> content = new ArrayList<>(page.getContent());
-        assertTrue(content.size() <= pageSize);
-        boolean lastSnippetInContentIsNotFirstInDb = content.get(content.size() - 1).getId() != 1;
-        assertTrue(lastSnippetInContentIsNotFirstInDb);
+        if (!content.isEmpty()) {
+            boolean lastSnippetInContentIsNotFirstInDb =
+                    content.get(content.size() - 1).getId() != 1;
+            assertTrue(lastSnippetInContentIsNotFirstInDb);
+        }
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"SIMPLE", "REGEX"})
-    void searchSnippetsNoneFoundTest(String mode){
-        var request = new SearchPublicSnippets.RequestModel("jvs", Mode.valueOf(mode), 0,
-                10);
+    void searchSnippetsNoneFoundTest(String mode) {
+        var request = new SearchSnippets.RequestModel("jvs", Mode.valueOf(mode), 0, 10);
         var response = snippetInteractor.searchPublicSnippets(request);
         assertTrue(response.getPage().isEmpty());
     }
 
     @ParameterizedTest
     @CsvSource(value = {"SIMPLE, 0, 0", "REGEX, -8, -2"})
-    void searchPublicSnippetsTestValidateRequest(String mode, int pageNum, int pageSize) {
+    void searchSnippetsTestValidateRequest(String mode, int pageNum, int pageSize) {
 
-        var request = new SearchPublicSnippets.RequestModel("java", Mode.valueOf(mode), pageNum,
-                pageSize);
+        var request =
+                new SearchSnippets.RequestModel("java", Mode.valueOf(mode), pageNum, pageSize);
         var response = snippetInteractor.searchPublicSnippets(request);
         var page = response.getPage();
 

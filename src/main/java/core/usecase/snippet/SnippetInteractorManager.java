@@ -61,9 +61,9 @@ public class SnippetInteractorManager extends AbstractSnippetInteractor implemen
     }
 
     @Override
-    public core.usecase.snippet.SearchPublicSnippets.ResponseModel searchPublicSnippets(
-            core.usecase.snippet.SearchPublicSnippets.RequestModel request) {
-        return new SearchPublicSnippets(gateway).execute(request);
+    public core.usecase.snippet.SearchSnippets.ResponseModel searchPublicSnippets(
+            core.usecase.snippet.SearchSnippets.RequestModel request) {
+        return new SearchSnippets(gateway).execute(request);
     }
 
 }

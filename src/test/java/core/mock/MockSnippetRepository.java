@@ -2,7 +2,6 @@ package core.mock;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import core.utils.Page;
@@ -97,8 +96,8 @@ public class MockSnippetRepository implements SnippetGateway {
     }
 
     @Override
-    public void withPublicSnippetsStream(Consumer<Stream<Snippet>> consumer) {
-        consumer.accept(map.values().stream().filter(Predicate.not(Snippet::isHidden)));
+    public void withSnippetsStream(Consumer<Stream<Snippet>> consumer) {
+        consumer.accept(map.values().stream());
     }
 
     @Override

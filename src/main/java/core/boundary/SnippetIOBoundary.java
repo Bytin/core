@@ -2,7 +2,7 @@ package core.boundary;
 
 import core.usecase.snippet.CreateSnippet;
 import core.usecase.snippet.DeleteSnippetOfUser;
-import core.usecase.snippet.SearchPublicSnippets;
+import core.usecase.snippet.SearchSnippets;
 import core.usecase.snippet.RetrievePublicSnippet.*;
 
 public interface SnippetIOBoundary extends IOBoundary {
@@ -28,6 +28,6 @@ public interface SnippetIOBoundary extends IOBoundary {
     DeleteSnippetOfUser.ResponseModel deleteOne(
             core.usecase.snippet.DeleteSnippetOfUser.RequestModel request);
 
-    SearchPublicSnippets.ResponseModel searchPublicSnippets(SearchPublicSnippets.RequestModel request);
+    SearchSnippets.ResponseModel searchPublicSnippets(SearchSnippets.RequestModel request);
 
 }
