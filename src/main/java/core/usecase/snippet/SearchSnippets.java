@@ -75,7 +75,7 @@ public class SearchSnippets extends AbstractSnippetInteractor
         Mode mode;
         @NonNull
         Integer page, size;
-        public Predicate<Snippet> predicate;
+        Predicate<Snippet> predicate;
     }
 
     @Value

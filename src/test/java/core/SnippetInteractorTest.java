@@ -2,40 +2,18 @@ package core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import core.boundary.SnippetIOBoundary;
-import core.boundary.UserIOBoundary;
-import core.dto.SnippetDTO;
-import core.dto.UserDTO;
-import core.gateway.SnippetGateway;
-import core.gateway.UserGateway;
-import core.mock.MockActivationTokenRepo;
-import core.mock.MockSnippetRepository;
-import core.mock.MockUserRepository;
-import core.usecase.UseCaseException.DifferentSnippetOwnerException;
-import core.usecase.UseCaseException.HiddenSnippetException;
-import core.usecase.UseCaseException.NoSuchSnippetException;
-import core.usecase.snippet.CreateSnippet;
-import core.usecase.snippet.DeleteSnippetOfUser;
-import core.usecase.snippet.RetrieveAllPublicSnippets;
-import core.usecase.snippet.RetrieveAllSnippetsOfUser;
-import core.usecase.snippet.RetrievePublicSnippet;
-import core.usecase.snippet.RetrieveRecentSnippets;
-import core.usecase.snippet.RetrieveSnippetOfUser;
-import core.usecase.snippet.SearchSnippets;
-import core.usecase.snippet.SnippetInteractorManager;
-import core.usecase.snippet.UpdateSnippet;
+import core.boundary.*;
+import core.dto.*;
+import core.gateway.*;
+import core.mock.*;
+import core.usecase.UseCaseException.*;
+import core.usecase.snippet.*;
 import core.usecase.snippet.SearchSnippets.Mode;
 import core.usecase.user.UserInteractorManager;
 import core.utils.Page;
@@ -261,32 +239,39 @@ public class SnippetInteractorTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"java, SIMPLE, 0, 2, false", "jav., REGEX, 0, 2, false",
-            "jav.*, REGEX, 1, 1, true", "jav, REGEX, 1, 3, true", "jav, SIMPLE, 1, 10, true"})
-    public void searchSnippetsTest(String phrase, String mode, int pageNum, int pageSize,
-            boolean hidden) {
-        var request = new SearchSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum, pageSize,
-                Predicate.not(snippet -> snippet.isHidden() == hidden));
+    @CsvSource(value = {"java, SIMPLE, 0, 2", "jav., REGEX, 0, 2", "jav.*, REGEX, 1, 1",
+            "jav, SIMPLE, 1, 1"})
+    public void searchPublicSnippetsTest(String phrase, String mode, int pageNum, int pageSize) {
+        var request =
+                new SearchSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum, pageSize);
         var response = snippetInteractor.searchPublicSnippets(request);
         var page = response.getPage();
 
-        pageSize = pageSize < 1 ? 1 : pageSize;
-        pageNum = pageNum < 0 ? 0 : pageNum;
         assertEquals(pageNum, page.getNumber());
         assertEquals(pageSize, page.getSize());
         assertEquals(snippetDb.count() / pageSize, page.getTotal());
-        assertFalse(page.getContent().isEmpty() && pageNum < page.getTotal());
+        assertFalse(page.getContent().isEmpty());
 
         long hiddenSnippetsNum = page.getContent().stream().filter(SnippetDTO::isHidden).count();
-        assertEquals(hidden ? 0 : 2, hiddenSnippetsNum);
+        assertEquals(0, hiddenSnippetsNum);
         assertTrue(page.getContent().size() <= pageSize);
 
         List<SnippetDTO> content = new ArrayList<>(page.getContent());
-        if (!content.isEmpty()) {
-            boolean lastSnippetInContentIsNotFirstInDb =
-                    content.get(content.size() - 1).getId() != 1;
-            assertTrue(lastSnippetInContentIsNotFirstInDb);
-        }
+        boolean lastSnippetInContentIsNotFirstInDb = content.get(content.size() - 1).getId() != 1;
+        assertTrue(lastSnippetInContentIsNotFirstInDb);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"java, SIMPLE, 0, 3, noah", "jav., REGEX, 0, 3, kate"})
+    public void searchPrivateSnippetsTest(String phrase, String mode, int pageNum, int pageSize, String owner) {
+        SnippetDTO snippetOfUser = dummyOwnedSnippets.getSnippetOfUser(owner);
+
+        var request =
+                new SearchSnippets.RequestModel(phrase, Mode.valueOf(mode), pageNum, pageSize);
+        var response = snippetInteractor.searchSnippetsOfUser(request, owner);
+        var page = response.getPage();
+
+        assertIterableEquals(List.of(snippetOfUser), page.getContent());
     }
 
     @ParameterizedTest

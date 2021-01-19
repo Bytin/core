@@ -30,4 +30,6 @@ public interface SnippetIOBoundary extends IOBoundary {
 
     SearchSnippets.ResponseModel searchPublicSnippets(SearchSnippets.RequestModel request);
 
+    SearchSnippets.ResponseModel searchSnippetsOfUser(SearchSnippets.RequestModel request, String username);
+
 }
